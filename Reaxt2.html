@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive React JS Mind Map</title>
+    <style>
+        /* General Styles & Light Mode */
+        :root {
+            --bg-color: #f4f7f9;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --heading-color: #007bff;
+            --progress-bar-bg: #e9ecef;
+            --progress-bar-fill: #007bff;
+            --checkbox-color: #007bff;
+            --label-color: #555;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-top: 100px; /* Space for fixed header */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            --heading-color: #4dabf7;
+            --progress-bar-bg: #333;
+            --progress-bar-fill: #4dabf7;
+            --checkbox-color: #4dabf7;
+            --label-color: #ccc;
+            --border-color: #444;
+        }
+
+        /* Header & Progress Bars */
+        .header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            padding: 10px 5%;
+            box-sizing: border-box;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        
+        #scroll-progress-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: transparent;
+        }
+
+        #scroll-progress-bar {
+            height: 4px;
+            width: 0%;
+            background-color: var(--progress-bar-fill);
+            transition: width 0.1s linear;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .dark-mode-toggle {
+            cursor: pointer;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--bg-color);
+        }
+        
+        #checklist-progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--progress-bar-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 5px;
+            position: relative;
+        }
+        
+        #checklist-progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--progress-bar-fill);
+            border-radius: 6px;
+            transition: width 0.4s ease-in-out;
+        }
+
+        #checklist-progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: #000;
+            font-weight: bold;
+        }
+        
+        main {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Content Cards */
+        .level-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            padding: 25px 30px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        h1, h2 {
+            color: var(--heading-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: var(--text-color);
+            margin-top: 25px;
+            font-size: 1.3em;
+        }
+
+        /* Checkbox & List Styles */
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 12px;
+            cursor: pointer;
+            /* Custom checkbox appearance */
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--checkbox-color);
+            border-radius: 4px;
+            position: relative;
+            top: -2px;
+            transition: background-color 0.2s;
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: var(--checkbox-color);
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            color: var(--card-bg);
+            font-size: 14px;
+            top: -2px;
+            left: 2px;
+        }
+
+        label {
+            color: var(--label-color);
+            cursor: pointer;
+            transition: color 0.3s;
+            flex-grow: 1;
+        }
+
+        label:has(+ input:checked) { /* Not supported in all browsers, fallback needed */
+             text-decoration: line-through;
+             color: #999;
+        }
+        
+        li:has(input:checked) label { /* More widely supported */
+            text-decoration: line-through;
+            color: #888;
+        }
+        
+        body.dark-mode li:has(input:checked) label {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <div id="scroll-progress-container">
+            <div id="scroll-progress-bar"></div>
+        </div>
+        <div class="controls">
+            <h1>React JS Learning Path 🚀</h1>
+            <button class="dark-mode-toggle" id="darkModeToggle">Toggle Dark Mode</button>
+        </div>
+        <div id="checklist-progress-container">
+            <div id="checklist-progress-bar"></div>
+            <span id="checklist-progress-text">0%</span>
+        </div>
+    </div>
+
+    <main>
+        <section class="level-card" id="beginner">
+            <h2>1. Beginner Level</h2>
+            <div>
+                <h3>What is React?</h3>
+                <ul>
+                    <li><input type="checkbox" id="c1"><label for="c1">JavaScript library for building user interfaces</label></li>
+                    <li><input type="checkbox" id="c2"><label for="c2">Component-based architecture</label></li>
+                    <li><input type="checkbox" id="c3"><label for="c3">Declarative syntax</label></li>
+                </ul>
+
+                <h3>JSX (JavaScript XML)</h3>
+                <ul>
+                    <li><input type="checkbox" id="c4"><label for="c4">Mixing HTML with JavaScript</label></li>
+                    <li><input type="checkbox" id="c5"><label for="c5">Syntax rules and how it translates to `React.createElement()`</label></li>
+                    <li><input type="checkbox" id="c6"><label for="c6">Embedding expressions inside JSX</label></li>
+                </ul>
+
+                <h3>Components</h3>
+                <ul>
+                    <li><input type="checkbox" id="c7"><label for="c7">Functional Components</label></li>
+                    <li><input type="checkbox" id="c8"><label for="c8">Class Components (Legacy)</label></li>
+                    <li><input type="checkbox" id="c9"><label for="c9">Props and State</label></li>
+                </ul>
+                
+                <h3>State Management</h3>
+                <ul>
+                    <li><input type="checkbox" id="c10"><label for="c10">`useState` Hook</label></li>
+                    <li><input type="checkbox" id="c11"><label for="c11">Setting and updating state</label></li>
+                </ul>
+
+                <h3>Event Handling</h3>
+                <ul>
+                    <li><input type="checkbox" id="c12"><label for="c12">Handling events like `onClick`, `onChange`</label></li>
+                    <li><input type="checkbox" id="c13"><label for="c13">Passing methods as props</label></li>
+                </ul>
+
+                <h3>Conditional Rendering</h3>
+                <ul>
+                    <li><input type="checkbox" id="c14"><label for="c14">Using `if`, `&&`, ternary operator</label></li>
+                </ul>
+
+                <h3>Lists and Keys</h3>
+                <ul>
+                    <li><input type="checkbox" id="c15"><label for="c15">Rendering lists of items</label></li>
+                    <li><input type="checkbox" id="c16"><label for="c16">Understanding the importance of `key` for list items</label></li>
+                </ul>
+                
+                <h3>Forms and Input Handling</h3>
+                <ul>
+                    <li><input type="checkbox" id="c17"><label for="c17">Controlled vs Uncontrolled Components</label></li>
+                    <li><input type="checkbox" id="c18"><label for="c18">Handling form inputs</label></li>
+                    <li><input type="checkbox" id="c19"><label for="c19">Using `useState` for input values</label></li>
+                </ul>
+
+                <h3>Styling React Components</h3>
+                <ul>
+                    <li><input type="checkbox" id="c20"><label for="c20">Inline Styles</label></li>
+                    <li><input type="checkbox" id="c21"><label for="c21">External CSS</label></li>
+                    <li><input type="checkbox" id="c22"><label for="c22">CSS Modules</label></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="level-card" id="intermediate">
+            <h2>2. Intermediate Level</h2>
+            <div>
+                 <h3>React Lifecycle (Class Components)</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c23"><label for="c23">`componentDidMount`, `componentDidUpdate`, `componentWillUnmount`</label></li>
+                 </ul>
+
+                 <h3>Hooks</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c24"><label for="c24">`useEffect`: Side effects in function components</label></li>
+                    <li><input type="checkbox" id="c25"><label for="c25">`useContext`: Global state management with context</label></li>
+                    <li><input type="checkbox" id="c26"><label for="c26">`useRef`: Accessing DOM elements directly</label></li>
+                    <li><input type="checkbox" id="c27"><label for="c27">`useReducer`: Advanced state management (complex state logic)</label></li>
+                 </ul>
+                 
+                 <h3>Context API</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c28"><label for="c28">Creating a context</label></li>
+                    <li><input type="checkbox" id="c29"><label for="c29">Providing and consuming context</label></li>
+                 </ul>
+
+                 <h3>React Router</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c30"><label for="c30">Navigating between pages</label></li>
+                    <li><input type="checkbox" id="c31"><label for="c31">Dynamic routing</label></li>
+                    <li><input type="checkbox" id="c32"><label for="c32">Nested routes</label></li>
+                 </ul>
+
+                 <h3>Error Boundaries</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c33"><label for="c33">Handling errors in components</label></li>
+                    <li><input type="checkbox" id="c34"><label for="c34">Using `componentDidCatch` (for class components)</label></li>
+                 </ul>
+
+                 <h3>Code Splitting</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c35"><label for="c35">Lazy loading components with `React.lazy` and `Suspense`</label></li>
+                 </ul>
+
+                 <h3>Higher Order Components (HOCs)</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c36"><label for="c36">Function that takes a component and returns a new component</label></li>
+                 </ul>
+                 
+                 <h3>Prop Types</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c37"><label for="c37">Type-checking props using `prop-types`</label></li>
+                 </ul>
+
+                 <h3>React DevTools</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c38"><label for="c38">Debugging React applications using DevTools</label></li>
+                 </ul>
+                 
+                 <h3>Testing React Components</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c39"><label for="c39">Introduction to Jest and React Testing Library</label></li>
+                    <li><input type="checkbox" id="c40"><label for="c40">Writing basic test cases</label></li>
+                 </ul>
+
+                 <h3>Performance Optimization</h3>
+                 <ul>
+                    <li><input type="checkbox" id="c41"><label for="c41">`React.memo` and `PureComponent`</label></li>
+                    <li><input type="checkbox" id="c42"><label for="c42">Lazy loading images, assets, and components</label></li>
+                    <li><input type="checkbox" id="c43"><label for="c43">Optimizing renders using `shouldComponentUpdate`</label></li>
+                 </ul>
+            </div>
+        </section>
+
+        <section class="level-card" id="professional">
+            <h2>3. Professional Level</h2>
+            <div>
+                <h3>Advanced State Management</h3>
+                <ul>
+                    <li><input type="checkbox" id="c44"><label for="c44">Redux: Store, Actions, Reducers</label></li>
+                    <li><input type="checkbox" id="c45"><label for="c45">Redux Thunk / Redux Saga (for async actions)</label></li>
+                    <li><input type="checkbox" id="c46"><label for="c46">Redux Toolkit (RTK)</label></li>
+                    <li><input type="checkbox" id="c47"><label for="c47">React-Query / SWR</label></li>
+                    <li><input type="checkbox" id="c48"><label for="c48">Managing server state in React</label></li>
+                    <li><input type="checkbox" id="c49"><label for="c49">Fetching, caching, and synchronizing data</label></li>
+                </ul>
+
+                <h3>Custom Hooks</h3>
+                <ul>
+                    <li><input type="checkbox" id="c50"><label for="c50">Writing your own hooks</label></li>
+                    <li><input type="checkbox" id="c51"><label for="c51">Sharing stateful logic across components</label></li>
+                </ul>
+
+                <h3>Server-Side Rendering (SSR)</h3>
+                <ul>
+                    <li><input type="checkbox" id="c52"><label for="c52">Next.js for SSR with React</label></li>
+                    <li><input type="checkbox" id="c53"><label for="c53">Benefits of SSR (SEO, faster initial load)</label></li>
+                </ul>
+
+                <h3>Static Site Generation (SSG)</h3>
+                <ul>
+                    <li><input type="checkbox" id="c54"><label for="c54">Using Next.js for static sites</label></li>
+                    <li><input type="checkbox" id="c55"><label for="c55">`getStaticProps` and `getStaticPaths`</label></li>
+                </ul>
+
+                <h3>Progressive Web App (PWA)</h3>
+                <ul>
+                    <li><input type="checkbox" id="c56"><label for="c56">Building PWAs with React</label></li>
+                    <li><input type="checkbox" id="c57"><label for="c57">Service workers and caching</label></li>
+                </ul>
+                
+                <h3>React Suspense and Concurrent Mode</h3>
+                <ul>
+                    <li><input type="checkbox" id="c58"><label for="c58">Handling async rendering and code-splitting with Suspense</label></li>
+                    <li><input type="checkbox" id="c59"><label for="c59">Concurrent Rendering for better user experience</label></li>
+                </ul>
+
+                <h3>TypeScript with React</h3>
+                <ul>
+                    <li><input type="checkbox" id="c60"><label for="c60">Using TypeScript in React applications</label></li>
+                    <li><input type="checkbox" id="c61"><label for="c61">Typing props, state, and events</label></li>
+                </ul>
+
+                <h3>Web Vitals and Performance Optimization</h3>
+                <ul>
+                    <li><input type="checkbox" id="c62"><label for="c62">Measuring and improving React app performance</label></li>
+                    <li><input type="checkbox" id="c63"><label for="c63">Using web performance APIs</label></li>
+                </ul>
+                
+                <h3>Design Patterns</h3>
+                <ul>
+                    <li><input type="checkbox" id="c64"><label for="c64">Compound Components</label></li>
+                    <li><input type="checkbox" id="c65"><label for="c65">Render Props</label></li>
+                    <li><input type="checkbox" id="c66"><label for="c66">Controlled vs Uncontrolled Components</label></li>
+                    <li><input type="checkbox" id="c67"><label for="c67">Container vs Presentational Components</label></li>
+                    <li><input type="checkbox" id="c68"><label for="c68">Separation of concerns and cleaner codebase</label></li>
+                </ul>
+                
+                <h3>React with GraphQL</h3>
+                <ul>
+                    <li><input type="checkbox" id="c69"><label for="c69">Using Apollo Client</label></li>
+                    <li><input type="checkbox" id="c70"><label for="c70">Querying and mutating data with GraphQL</label></li>
+                </ul>
+                
+                <h3>Code Architecture</h3>
+                <ul>
+                    <li><input type="checkbox" id="c71"><label for="c71">Folder structure best practices</label></li>
+                    <li><input type="checkbox" id="c72"><label for="c72">Atomic design principles</label></li>
+                    <li><input type="checkbox" id="c73"><label for="c73">Component composition vs inheritance</label></li>
+                </ul>
+                
+                <h3>Micro Frontends</h3>
+                <ul>
+                    <li><input type="checkbox" id="c74"><label for="c74">Using React in a micro-frontend architecture</label></li>
+                </ul>
+
+                <h3>Continuous Integration/Continuous Deployment (CI/CD)</h3>
+                <ul>
+                    <li><input type="checkbox" id="c75"><label for="c75">Automating tests and deployment with tools like GitHub Actions, CircleCI, Jenkins</label></li>
+                </ul>
+                
+                <h3>Security in React</h3>
+                <ul>
+                    <li><input type="checkbox" id="c76"><label for="c76">Preventing Cross-Site Scripting (XSS)</label></li>
+                    <li><input type="checkbox" id="c77"><label for="c77">Preventing Cross-Site Request Forgery (CSRF)</label></li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="level-card" id="additional-topics">
+            <h2>Additional Topics for Professionals</h2>
+            <ul>
+                <li><input type="checkbox" id="c78"><label for="c78">React Native (Mobile Development)</label></li>
+                <li><input type="checkbox" id="c79"><label for="c79">WebAssembly and React</label></li>
+                <li><input type="checkbox" id="c80"><label for="c80">Monorepos with React</label></li>
+                <li><input type="checkbox" id="c81"><label for="c81">Webpack/Babel (Advanced)</label></li>
+                <li><input type="checkbox" id="c82"><label for="c82">Serverless Architecture (e.g., AWS Lambda, Firebase Functions)</label></li>
+                <li><input type="checkbox" id="c83"><label for="c83">Headless CMS Integration (e.g., Strapi, Contentful)</label></li>
+                <li><input type="checkbox" id="c84"><label for="c84">GraphQL Subscriptions</label></li>
+                <li><input type="checkbox" id="c85"><label for="c85">Microservices with React</label></li>
+            </ul>
+        </section>
+
+        <section class="level-card" id="learning-path">
+            <h2>Suggested React Learning Path</h2>
+            <ul>
+                <li><input type="checkbox" id="c86"><label for="c86">Start with Basic JavaScript and ES6</label></li>
+                <li><input type="checkbox" id="c87"><label for="c87">React Core Concepts: JSX, Components, State, Props</label></li>
+                <li><input type="checkbox" id="c88"><label for="c88">Get comfortable with Hooks</label></li>
+                <li><input type="checkbox" id="c89"><label for="c89">Intermediate Topics: Context API, React Router, useEffect</label></li>
+                <li><input type="checkbox" id="c90"><label for="c90">Dive into performance optimizations and testing</label></li>
+                <li><input type="checkbox" id="c91"><label for="c91">Advanced: Redux, Next.js (SSR/SSG)</label></li>
+                <li><input type="checkbox" id="c92"><label for="c92">Stay Updated: Follow React's evolution</label></li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Dark Mode ---
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+
+            const applyDarkMode = (isDark) => {
+                if (isDark) {
+                    body.classList.add('dark-mode');
+                    darkModeToggle.textContent = 'Toggle Light Mode';
+                } else {
+                    body.classList.remove('dark-mode');
+                    darkModeToggle.textContent = 'Toggle Dark Mode';
+                }
+            };
+
+            darkModeToggle.addEventListener('click', () => {
+                const isDarkMode = body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', isDarkMode);
+                applyDarkMode(isDarkMode);
+            });
+
+            // Load dark mode preference
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            applyDarkMode(savedDarkMode);
+
+
+            // --- Scroll Progress Bar ---
+            const scrollProgressBar = document.getElementById('scroll-progress-bar');
+            window.addEventListener('scroll', () => {
+                const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercent = (scrollTop / scrollHeight) * 100;
+                scrollProgressBar.style.width = scrollPercent + '%';
+            });
+
+
+            // --- Checklist Progress ---
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checklistProgressBar = document.getElementById('checklist-progress-bar');
+            const checklistProgressText = document.getElementById('checklist-progress-text');
+            const totalCheckboxes = checkboxes.length;
+            const storageKey = 'reactChecklistState';
+
+            const updateChecklistProgress = () => {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const progress = totalCheckboxes > 0 ? (checkedCount / totalCheckboxes) * 100 : 0;
+                checklistProgressBar.style.width = progress + '%';
+                checklistProgressText.textContent = `${Math.round(progress)}%`;
+            };
+            
+            const saveState = () => {
+                const state = {};
+                checkboxes.forEach(checkbox => {
+                    state[checkbox.id] = checkbox.checked;
+                });
+                localStorage.setItem(storageKey, JSON.stringify(state));
+            };
+
+            const loadState = () => {
+                const savedState = JSON.parse(localStorage.getItem(storageKey)) || {};
+                checkboxes.forEach(checkbox => {
+                    if (savedState[checkbox.id]) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateChecklistProgress();
+            };
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    updateChecklistProgress();
+                    saveState();
+                });
+            });
+
+            // Initial load
+            loadState();
+        });
+    </script>
+</body>
+</html>
