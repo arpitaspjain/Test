@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced JavaScript Mind Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --container-bg: #ffffff;
+            --text-color: #212529;
+            --primary-color: #4f46e5;
+            --secondary-color: #64748b;
+            --border-color: #e5e7eb;
+            --accent-color: #10b981;
+            --code-bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem;
+            line-height: 1.7;
+        }
+
+        .mindmap-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border-radius: 12px;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 600;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Overview Section --- */
+        .overview-section summary {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .overview-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding-top: 1.5rem;
+        }
+
+        .overview-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary-color);
+            padding-left: 0.5rem;
+        }
+
+        .overview-content ul {
+            padding-left: 1rem;
+            margin: 0;
+        }
+
+        .overview-content li {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        /* --- Interactive Mind Map --- */
+        .interactive-map {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        details {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        details[open] {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.1);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--container-bg);
+            transition: background-color 0.2s ease;
+        }
+        
+        summary:hover {
+            background-color: var(--bg-color);
+        }
+
+        summary::after {
+            content: '+';
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--primary-color);
+            transform: rotate(0);
+            transition: transform 0.3s ease;
+        }
+
+        details[open] > summary::after {
+            transform: rotate(45deg);
+        }
+
+        .details-content {
+            padding: 0 1.5rem 1rem 1.5rem;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 1.5rem;
+            border-left: 1px dashed var(--border-color);
+        }
+        
+        li {
+            position: relative;
+            padding: 0.4rem 0 0.4rem 1.25rem;
+        }
+
+        li::before {
+            content: '';
+            position: absolute;
+            left: -1px;
+            top: 1.1em;
+            width: 1rem;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        code {
+            background-color: var(--code-bg);
+            color: #d63384;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        .new-topic {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="mindmap-container">
+    <h1>🚀 Advanced JavaScript Mind Map</h1>
+    
+    <details class="overview-section">
+        <summary>Toggle Complete Overview</summary>
+        <div class="overview-content">
+            <div>
+                <h3>🌱 Basics & Fundamentals</h3>
+                <ul><li>Syntax, Variables, Scope</li><li>Data Types, Operators</li><li>Control Flow, Functions</li><li>Objects, Arrays, Map, Set</li></ul>
+            </div>
+            <div>
+                <h3>🌐 DOM Manipulation</h3>
+                <ul><li>Selectors, Traversing</li><li>Manipulation, Events, Styling</li></ul>
+            </div>
+            <div>
+                <h3>🔌 Browser APIs</h3>
+                <ul><li>Storage (localStorage)</li><li>Real-time (WebSockets)</li><li>Graphics (Canvas, WebGL)</li><li>Threading (Web Workers)</li><li>Device Access (Geolocation)</li></ul>
+            </div>
+             <div>
+                <h3>🚀 Asynchronous JS</h3>
+                <ul><li>Event Loop, Callbacks</li><li>Promises, Async/Await</li><li>Promise Methods</li></ul>
+            </div>
+            <div>
+                <h3>🛠️ ES6 & Beyond</h3>
+                <ul><li>ES6 Features</li><li>ES2020+ Features</li></ul>
+            </div>
+            <div>
+                <h3>🏛️ Paradigms & Patterns</h3>
+                <ul><li>Functional Programming</li><li>OOP, Design Patterns</li></ul>
+            </div>
+            <div>
+                <h3>🧠 Advanced Concepts</h3>
+                <ul><li>Prototypes, `this`, Closures</li><li>Performance Optimization</li><li>Web Security, WebAssembly</li></ul>
+            </div>
+            <div>
+                <h3>⚙️ Ecosystem & Tooling</h3>
+                <ul><li>TypeScript, Runtimes</li><li>Package Managers, Bundlers</li><li>Transpilers, Linters, Monorepos</li></ul>
+            </div>
+            <div>
+                <h3>🏗️ Frameworks & Libraries</h3>
+                <ul><li>Frontend, Backend</li><li>State Management, SSGs</li><li>Testing, Mobile/Desktop</li><li>Data Visualization</li></ul>
+            </div>
+        </div>
+    </details>
+
+    <div class="interactive-map">
+        <details>
+            <summary>🌱 1. Basics & Fundamentals</summary>
+            <div class="details-content"><ul><li><strong>Syntax:</strong> Statements, Comments, Case Sensitivity</li><li><strong>Variables & Scope:</strong> <code>var</code>, <code>let</code>, <code>const</code>, Global/Function/Block Scope, Hoisting</li><li><strong>Data Types:</strong> Primitives & Objects</li><li><strong>Operators:</strong> Arithmetic, Assignment, Comparison, Logical, Ternary</li><li><strong>Control Flow:</strong> Conditionals (<code>if/else</code>, <code>switch</code>), Loops (<code>for</code>, <code>while</code>)</li><li><strong>Functions:</strong> Declarations, Expressions, Arrow, <code>this</code>, IIFE</li><li><strong>Data Structures:</strong> Objects, Arrays, <code>Map</code>, <code>Set</code></li></ul></div>
+        </details>
+        <details>
+            <summary>🌐 2. DOM Manipulation</summary>
+            <div class="details-content"><ul><li><strong>Selectors:</strong> <code>getElementById</code>, <code>querySelector</code>, etc.</li><li><strong>Traversing:</strong> <code>parentNode</code>, <code>children</code>, <code>nextElementSibling</code></li><li><strong>Manipulation:</strong> Creating, Adding, Modifying, Styling Elements</li><li><strong>Events:</strong> <code>addEventListener</code>, Event Propagation (Bubbling & Capturing)</li></ul></div>
+        </details>
+        <details>
+            <summary>🔌 3. Browser APIs (Web APIs)</summary>
+            <div class="details-content"><ul><li class="new-topic"><strong>Storage:</strong> <code>localStorage</code>, <code>sessionStorage</code>, <code>IndexedDB</code></li><li class="new-topic"><strong>Real-time:</strong> <code>WebSockets</code>, Server-Sent Events</li><li class="new-topic"><strong>Graphics:</strong> <code>Canvas API</code> (2D), <code>WebGL</code> (3D)</li><li class="new-topic"><strong>Threading:</strong> <code>Web Workers</code>, <code>Service Workers</code> (PWA)</li><li class="new-topic"><strong>Device Access:</strong> <code>Geolocation API</code>, <code>MediaDevices</code></li><li><strong>Other APIs:</strong> <code>Fetch API</code>, <code>History API</code></li></ul></div>
+        </details>
+        <details>
+            <summary>🚀 4. Asynchronous JavaScript</summary>
+            <div class="details-content"><ul><li><strong>Concurrency Model:</strong> Event Loop, Callback Queue, Microtask Queue</li><li><strong>Patterns:</strong> Callbacks, Promises (<code>.then</code>, <code>.catch</code>), <code>async/await</code></li><li><strong>Promise Methods:</strong> <code>Promise.all</code>, <code>Promise.race</code>, <span class="new-topic"><code>Promise.allSettled</code>, <code>Promise.any</code></span></li></ul></div>
+        </details>
+        <details>
+            <summary>🛠️ 5. ES6 & Beyond</summary>
+            <div class="details-content"><ul><li><strong>ES6 (ES2015):</strong> <code>let</code>/<code>const</code>, Arrow Functions, Classes, Modules, Destructuring</li><li class="new-topic"><strong>ES2020+:</strong> Optional Chaining (<code>?.</code>), Nullish Coalescing (<code>??</code>), Private Class Fields (<code>#</code>)</li></ul></div>
+        </details>
+        <details>
+            <summary>🏛️ 6. Paradigms & Patterns</summary>
+            <div class="details-content"><ul><li class="new-topic"><strong>Functional Programming:</strong> Pure Functions, Immutability, Higher-Order Functions</li><li class="new-topic"><strong>Object-Oriented Programming (OOP):</strong> Classes, Inheritance, Encapsulation</li><li class="new-topic"><strong>Design Patterns:</strong> Module, Singleton, Observer, Factory</li></ul></div>
+        </details>
+        <details>
+            <summary>🧠 7. Advanced Concepts</summary>
+            <div class="details-content"><ul><li><strong>Core Mechanics:</strong> Prototypes, <code>this</code> keyword, Closures, Garbage Collection</li><li class="new-topic"><strong>Performance:</strong> Debouncing, Throttling, Memoization, Code Splitting</li><li class="new-topic"><strong>Security:</strong> CORS, XSS, CSRF, Content Security Policy</li><li class="new-topic"><strong>WebAssembly (WASM):</strong> Interacting with high-performance modules</li></ul></div>
+        </details>
+        <details>
+            <summary>⚙️ 8. Ecosystem & Tooling</summary>
+            <div class="details-content"><ul><li class="new-topic"><strong>TypeScript:</strong> Superset of JS with static types</li><li><strong>Runtimes:</strong> Browser (V8), Node.js, Deno, Bun</li><li><strong>Package Managers:</strong> <code>npm</code>, <code>yarn</code>, <code>pnpm</code></li><li><strong>Build Tools:</strong> Webpack, Vite, Parcel, Rollup</li><li><strong>Transpilers:</strong> Babel</li><li><strong>Linters & Formatters:</strong> ESLint, Prettier</li><li class="new-topic"><strong>Monorepo Tools:</strong> Turborepo, Nx</li></ul></div>
+        </details>
+        <details>
+            <summary>🏗️ 9. Frameworks & Libraries</summary>
+            <div class="details-content"><ul><li><strong>Frontend (UI):</strong> React, Angular, Vue, Svelte</li><li><strong>Backend (Node.js):</strong> Express, NestJS, Koa</li><li><strong>State Management:</strong> Redux, Zustand, Pinia</li><li class="new-topic"><strong>Static Site Generators (SSGs):</strong> Next.js, Nuxt.js, Astro</li><li class="new-topic"><strong>Testing:</strong> Jest, Vitest, Cypress, Playwright, React Testing Library</li><li class="new-topic"><strong>Mobile & Desktop:</strong> React Native, Electron</li><li class="new-topic"><strong>Data Visualization:</strong> D3.js, Chart.js</li></ul></div>
+        </details>
+    </div>
+
+</div>
+
+<footer>
+    <p>Generated on July 20, 2025</p>
+</footer>
+
+</body>
+</html>
