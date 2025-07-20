@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive React Native Mind Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --heading-color: #61DAFB; /* React Blue */
+            --progress-bar-bg: #e9ecef;
+            --progress-bar-fill: #61DAFB;
+            --checkbox-color: #61DAFB;
+            --label-color: #495057;
+            --border-color: #dee2e6;
+            --subtle-hover-bg: #f1f3f5;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e9ecef;
+            --card-bg: #1c1c1e;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --heading-color: #61DAFB;
+            --progress-bar-bg: #343a40;
+            --progress-bar-fill: #61DAFB;
+            --checkbox-color: #61DAFB;
+            --label-color: #adb5bd;
+            --border-color: #495057;
+            --subtle-hover-bg: #2c2c2e;
+        }
+
+        /* General Styles */
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-top: 100px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        main {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Progress Bars */
+        .header-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.85);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 12px 5%;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        body.dark-mode .header-container {
+             background-color: rgba(var(--card-bg-rgb, 28, 28, 30), 0.85);
+        }
+        #scroll-progress-container { position: absolute; top: 0; left: 0; width: 100%; height: 3px; }
+        #scroll-progress-bar { height: 100%; width: 0%; background: var(--progress-bar-fill); }
+
+        .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        h1 { font-size: 1.5rem; margin: 0; color: var(--heading-color); }
+
+        .dark-mode-toggle {
+            cursor: pointer; background: var(--subtle-hover-bg); border: 1px solid var(--border-color);
+            color: var(--text-color); padding: 8px 12px; border-radius: 50px; font-size: 14px;
+            font-weight: 500; display: flex; align-items: center; gap: 8px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .dark-mode-toggle:hover { background-color: var(--border-color); }
+
+        #checklist-progress-container {
+            width: 100%; height: 14px; background-color: var(--progress-bar-bg);
+            border-radius: 7px; overflow: hidden; position: relative;
+        }
+        #checklist-progress-bar {
+            width: 0%; height: 100%; background-color: var(--progress-bar-fill);
+            border-radius: 7px; transition: width 0.4s ease-out;
+        }
+        #checklist-progress-text {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px; color: #000; font-weight: bold;
+        }
+        body.dark-mode #checklist-progress-text { color: #fff; mix-blend-mode: difference;}
+
+
+        /* Content Cards & Sections */
+        .level-card {
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; box-shadow: var(--card-shadow);
+            margin-bottom: 30px; padding: 25px 30px;
+            transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+        .level-card h2 {
+            font-size: 2rem; color: var(--heading-color); border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px; margin-top: 0;
+        }
+
+        /* Collapsible Sections */
+        .collapsible-header {
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 0; border-bottom: 1px solid var(--border-color);
+        }
+        .collapsible-header:hover h3 { color: var(--heading-color); }
+        .collapsible-header h3 { margin: 0; font-size: 1.3em; color: var(--text-color); transition: color 0.2s; }
+        .collapsible-header .icon::before {
+            content: '▼'; display: inline-block; transition: transform 0.3s ease; font-size: 0.8em;
+        }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .collapsible.open .collapsible-header .icon::before { transform: rotate(-180deg); }
+
+        /* Checkbox & List Styles */
+        ul { list-style: none; padding-left: 5px; margin-top: 15px; }
+        li {
+            margin-bottom: 14px; display: flex; align-items: flex-start;
+            padding: 5px; border-radius: 5px; transition: background-color 0.2s;
+        }
+        li:hover { background-color: var(--subtle-hover-bg); }
+        input[type="checkbox"] {
+            -webkit-appearance: none; appearance: none;
+            background-color: transparent; margin: 0;
+            font: inherit; color: currentColor;
+            width: 1.15em; height: 1.15em;
+            border: 2px solid var(--checkbox-color); border-radius: 4px;
+            transform: translateY(0.15em);
+            margin-right: 12px;
+            cursor: pointer; display: grid;
+            place-content: center; flex-shrink: 0;
+        }
+        input[type="checkbox"]::before {
+            content: ""; width: 0.65em; height: 0.65em;
+            transform: scale(0); transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--card-bg);
+            background-color: var(--card-bg);
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        input[type="checkbox"]:checked { background-color: var(--checkbox-color); }
+        input[type="checkbox"]:checked::before { transform: scale(1); }
+        label { color: var(--label-color); cursor: pointer; transition: color 0.3s; }
+        li:has(input:checked) label { text-decoration: line-through; color: #888; }
+        body.dark-mode li:has(input:checked) label { color: #666; }
+    </style>
+</head>
+<body>
+
+    <header class="header-container">
+        <div id="scroll-progress-container"><div id="scroll-progress-bar"></div></div>
+        <div class="controls">
+            <h1>React Native Roadmap 🧠</h1>
+            <button class="dark-mode-toggle" id="darkModeToggle">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </button>
+        </div>
+        <div id="checklist-progress-container">
+            <div id="checklist-progress-bar"></div>
+            <span id="checklist-progress-text">0%</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="level-card">
+            <h2>🌱 Beginner Level</h2>
+            
+            <div class="collapsible open">
+                <div class="collapsible-header"><h3>1. Introduction</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c1"><label for="c1">What is React Native?</label></li>
+                        <li><input type="checkbox" id="c2"><label for="c2">Setup Environment (Expo vs CLI)</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible open">
+                <div class="collapsible-header"><h3>2. Core Concepts</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c3"><label for="c3">JSX, Components, Props & State</label></li>
+                        <li><input type="checkbox" id="c4"><label for="c4">Stylesheets & Styling</label></li>
+                        <li><input type="checkbox" id="c5"><label for="c5">Flexbox Layout</label></li>
+                    </ul>
+                </div>
+            </div>
+
+             <div class="collapsible open">
+                <div class="collapsible-header"><h3>3. Core Components</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c6"><label for="c6">View, Text, Image</label></li>
+                        <li><input type="checkbox" id="c7"><label for="c7">ScrollView, FlatList, SectionList</label></li>
+                        <li><input type="checkbox" id="c8"><label for="c8">Button, TextInput, Pressable</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible open">
+                <div class="collapsible-header"><h3>4. Basic APIs & Debugging</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c9"><label for="c9">Alert, Dimensions, Linking APIs</label></li>
+                        <li><input type="checkbox" id="c10"><label for="c10">Metro Bundler & DevTools</label></li>
+                        <li><input type="checkbox" id="c11"><label for="c11">Live Reload & Hot Reload</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="level-card">
+            <h2>🧩 Intermediate Level</h2>
+            
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>1. Navigation</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c12"><label for="c12">React Navigation (Stack, Tab, Drawer)</label></li>
+                        <li><input type="checkbox" id="c13"><label for="c13">Navigation Params & Deep Linking</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>2. State Management</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c14"><label for="c14">Hooks: useState, useEffect</label></li>
+                        <li><input type="checkbox" id="c15"><label for="c15">Context API for global state</label></li>
+                        <li><input type="checkbox" id="c16"><label for="c16">Redux Toolkit</label></li>
+                        <li><input type="checkbox" id="c17"><label for="c17">Zustand / Jotai (optional)</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>3. Styling, Forms & Data</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c18"><label for="c18">Styled Components & Responsive Design</label></li>
+                        <li><input type="checkbox" id="c19"><label for="c19">Form Libraries (Formik, React Hook Form)</label></li>
+                        <li><input type="checkbox" id="c20"><label for="c20">Data Fetching (Fetch API / Axios)</label></li>
+                        <li><input type="checkbox" id="c21"><label for="c21">AsyncStorage for persistence</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>4. Native Modules & Media</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c22"><label for="c22">Permissions API</label></li>
+                        <li><input type="checkbox" id="c23"><label for="c23">Linking Native Modules</label></li>
+                        <li><input type="checkbox" id="c24"><label for="c24">Platform-Specific Code</label></li>
+                        <li><input type="checkbox" id="c25"><label for="c25">Camera, Image Picker, Video, Icons</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="level-card">
+            <h2>🔬 Advanced / Professional Level</h2>
+
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>1. Performance & Animations</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c26"><label for="c26">Memoization: React.memo, useMemo, useCallback</label></li>
+                        <li><input type="checkbox" id="c27"><label for="c27">FlatList Optimization</label></li>
+                        <li><input type="checkbox" id="c28"><label for="c28">React Native Reanimated & Gesture Handler</label></li>
+                        <li><input type="checkbox" id="c29"><label for="c29">Lottie for complex animations</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>2. Deep Native Integration</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c30"><label for="c30">Writing Native Modules (Java/Kotlin, Obj-C/Swift)</label></li>
+                        <li><input type="checkbox" id="c31"><label for="c31">Bridging JS with Native Code</label></li>
+                        <li><input type="checkbox" id="c32"><label for="c32">Creating Custom Native UI Components</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+             <div class="collapsible">
+                <div class="collapsible-header"><h3>3. Offline, Storage & Testing</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c33"><label for="c33">Offline Storage: SQLite, Realm, MMKV</label></li>
+                        <li><input type="checkbox" id="c34"><label for="c34">Unit Testing (Jest)</label></li>
+                        <li><input type="checkbox" id="c35"><label for="c35">Integration Testing (React Native Testing Library)</label></li>
+                        <li><input type="checkbox" id="c36"><label for="c36">E2E Testing (Detox)</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>4. CI/CD & Deployment</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c37"><label for="c37">CI/CD: Fastlane, Bitrise, GitHub Actions</label></li>
+                        <li><input type="checkbox" id="c38"><label for="c38">App Store / Play Store Deployment</label></li>
+                        <li><input type="checkbox" id="c39"><label for="c39">OTA Updates (Expo Updates / CodePush)</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible">
+                <div class="collapsible-header"><h3>5. Security & Architecture</h3><span class="icon"></span></div>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><input type="checkbox" id="c40"><label for="c40">Secure Storage & Authentication (JWT, Biometrics)</label></li>
+                        <li><input type="checkbox" id="c41"><label for="c41">Permissions Management</label></li>
+                        <li><input type="checkbox" id="c42"><label for="c42">Folder Structure Best Practices</label></li>
+                        <li><input type="checkbox" id="c43"><label for="c43">Clean Architecture / Modularization</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            
+            // --- Dark Mode ---
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            const applyDarkMode = (isDark) => {
+                body.classList.toggle('dark-mode', isDark);
+                themeIcon.textContent = isDark ? '☀️' : '🌙';
+                themeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+                const cardBg = getComputedStyle(body).getPropertyValue('--card-bg').trim();
+                const rgb = cardBg.startsWith('#') ? hexToRgb(cardBg) : cardBg.match(/\d+/g);
+                if (rgb) body.style.setProperty('--card-bg-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
+            };
+
+            darkModeToggle.addEventListener('click', () => {
+                const isDarkMode = !body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDarkMode);
+                applyDarkMode(isDarkMode);
+            });
+            
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? [ parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16) ] : null;
+            }
+
+            // --- Scroll Progress Bar ---
+            const scrollProgressBar = document.getElementById('scroll-progress-bar');
+            window.addEventListener('scroll', () => {
+                const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                scrollProgressBar.style.width = `${scrollPercent}%`;
+            });
+
+            // --- Checklist Progress ---
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checklistProgressBar = document.getElementById('checklist-progress-bar');
+            const checklistProgressText = document.getElementById('checklist-progress-text');
+            const totalCheckboxes = checkboxes.length;
+            const storageKey = 'rnChecklistState';
+
+            const updateChecklistProgress = () => {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const progress = totalCheckboxes > 0 ? (checkedCount / totalCheckboxes) * 100 : 0;
+                checklistProgressBar.style.width = `${progress}%`;
+                checklistProgressText.textContent = `${Math.round(progress)}%`;
+            };
+            
+            const saveState = () => {
+                const state = Array.from(checkboxes).reduce((acc, cb) => ({ ...acc, [cb.id]: cb.checked }), {});
+                localStorage.setItem(storageKey, JSON.stringify(state));
+            };
+
+            const loadState = () => {
+                const savedState = JSON.parse(localStorage.getItem(storageKey)) || {};
+                checkboxes.forEach(cb => { cb.checked = savedState[cb.id] || false; });
+                updateChecklistProgress();
+            };
+
+            checkboxes.forEach(cb => cb.addEventListener('change', () => {
+                updateChecklistProgress();
+                saveState();
+            }));
+            
+            // --- Collapsible Sections ---
+            document.querySelectorAll('.collapsible').forEach(collapsible => {
+                const header = collapsible.querySelector('.collapsible-header');
+                const content = collapsible.querySelector('.collapsible-content');
+                if(!header || !content) return;
+
+                header.addEventListener('click', () => {
+                    collapsible.classList.toggle('open');
+                    content.style.maxHeight = collapsible.classList.contains('open') ? `${content.scrollHeight}px` : '0px';
+                });
+                
+                if (collapsible.classList.contains('open')) {
+                    content.style.maxHeight = `${content.scrollHeight}px`;
+                }
+            });
+
+            // --- Initial Load ---
+            applyDarkMode(localStorage.getItem('darkMode') === 'true');
+            loadState();
+        });
+    </script>
+</body>
+</html>
