@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive JavaScript Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stage-beginner: #4285F4;
+            --stage-intermediate: #0F9D58;
+            --stage-professional: #3f51b5;
+            
+            --light-bg: #f1f3f4;
+            --light-container-bg: #ffffff;
+            --light-text-primary: #202124;
+            --light-text-secondary: #5f6368;
+            --light-border-color: #dadce0;
+
+            --dark-bg: #202124;
+            --dark-container-bg: #303134;
+            --dark-text-primary: #e8eaed;
+            --dark-text-secondary: #bdc1c6;
+            --dark-border-color: #5f6368;
+
+            --bg-color: var(--light-bg);
+            --container-bg: var(--light-container-bg);
+            --text-primary: var(--light-text-primary);
+            --text-secondary: var(--light-text-secondary);
+            --border-color: var(--light-border-color);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 1rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            --bg-color: var(--dark-bg);
+            --container-bg: var(--dark-container-bg);
+            --text-primary: var(--dark-text-primary);
+            --text-secondary: var(--dark-text-secondary);
+            --border-color: var(--dark-border-color);
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+            margin-right: 1rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        .search-bar svg {
+            fill: var(--text-secondary);
+            margin-right: 0.75rem;
+            transition: fill 0.3s;
+        }
+
+        .search-bar .title {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 48px;
+        }
+
+        .theme-switch input {
+            display:none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 3px;
+            content: "";
+            height: 18px;
+            left: 3px;
+            position: absolute;
+            transition: .4s;
+            width: 18px;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--stage-professional);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .mindmap-card {
+            background: var(--container-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .mindmap-card h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 2.5rem 0;
+        }
+        
+        .stage-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .stage-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid;
+            margin-bottom: 1rem;
+        }
+        
+        .stage-title.beginner { color: var(--stage-beginner); border-color: var(--stage-beginner); }
+        .stage-title.intermediate { color: var(--stage-intermediate); border-color: var(--stage-intermediate); }
+        .stage-title.professional { color: var(--stage-professional); border-color: var(--stage-professional); }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            text-align: center;
+            color: white;
+            font-size: 0.7rem;
+            line-height: 12px;
+            font-weight: bold;
+            transition: width 0.4s ease-in-out;
+        }
+        .progress-bar.beginner { background-color: var(--stage-beginner); }
+        .progress-bar.intermediate { background-color: var(--stage-intermediate); }
+        .progress-bar.professional { background-color: var(--stage-professional); }
+
+        details {
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        details.stage-beginner { border-left-color: var(--stage-beginner); }
+        details.stage-intermediate { border-left-color: var(--stage-intermediate); }
+        details.stage-professional { border-left-color: var(--stage-professional); }
+        
+        summary {
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            transition: background-color 0.2s ease;
+        }
+        
+        summary:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        
+        body.dark-mode summary:hover {
+             background-color: rgba(255,255,255,0.05);
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary::after {
+            content: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="%235f6368"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>');
+            transform: rotate(0);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        details[open] > summary::after {
+            transform: rotate(180deg);
+        }
+
+        .details-content {
+            padding: 0 1.25rem 1.25rem 1.25rem;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .details-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0;
+        }
+
+        .details-content li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            padding: 0.3rem 0;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .details-content li input[type="checkbox"] {
+            margin-right: 0.75rem;
+            min-width: 16px;
+            min-height: 16px;
+        }
+        
+        .details-content li label {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        
+        .details-content li label.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .resource-link {
+            margin-left: auto;
+            padding-left: 0.5rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .resource-link:hover {
+            opacity: 1;
+        }
+        
+        code {
+            background-color: rgba(0,0,0,0.05);
+            color: #c53929;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        body.dark-mode code {
+             background-color: rgba(255,255,255,0.1);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <header class="header">
+        <div class="search-bar">
+            <svg focusable="false" height="20px" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+            <span class="title">Interactive JavaScript Dashboard</span>
+        </div>
+        <div class="theme-switch-wrapper">
+          <label class="theme-switch" for="theme-checkbox">
+            <input type="checkbox" id="theme-checkbox" />
+            <div class="slider"></div>
+          </label>
+        </div>
+    </header>
+
+    <div class="mindmap-card">
+        <h1>JavaScript: From Beginner to Professional</h1>
+        
+        <div class="stage-section" data-stage="beginner">
+            <h2 class="stage-title beginner">🌱 Stage 1: Beginner</h2>
+            <div class="progress-bar-container"><div class="progress-bar beginner"></div></div>
+            <details class="stage-beginner" open>
+                <summary>Basics & Fundamentals</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="b1-1"><label for="b1-1">Syntax, Variables & Scope</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="b1-2"><label for="b1-2">Data Types</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="b1-3"><label for="b1-3">Operators & Control Flow</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="b1-4"><label for="b1-4">Objects & Arrays</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_Objects" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-beginner">
+                <summary>Core Function Concepts</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="b2-1"><label for="b2-1">Function Basics</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-beginner">
+                <summary>Basic DOM Manipulation</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="b3-1"><label for="b3-1">What is the DOM?</label><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="b3-2"><label for="b3-2">Selecting & Manipulating Elements</label><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Manipulating_documents" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="b3-3"><label for="b3-3">Handling Events</label><a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+        </div>
+
+        <div class="stage-section" data-stage="intermediate">
+            <h2 class="stage-title intermediate">🚀 Stage 2: Intermediate</h2>
+            <div class="progress-bar-container"><div class="progress-bar intermediate"></div></div>
+            <details class="stage-intermediate">
+                <summary>Asynchronous JavaScript</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="i1-1"><label for="i1-1">Callbacks</label><a href="https://developer.mozilla.org/en-US/docs/Glossary/Callback_function" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i1-2"><label for="i1-2">Promises</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i1-3"><label for="i1-3">Async/Await</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i1-4"><label for="i1-4">The Event Loop</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Modern JS (ES6+)</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="i2-1"><label for="i2-1">Arrow Functions & Destructuring</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i2-2"><label for="i2-2">Modules (<code>import</code>/<code>export</code>)</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i2-3"><label for="i2-3">Classes</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Deeper DOM & Web APIs</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="i3-1"><label for="i3-1">Web Storage API</label><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i3-2"><label for="i3-2">Fetch API</label><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Intro to Ecosystem & Tooling</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="i4-1"><label for="i4-1">Package Management (npm)</label><a href="https://docs.npmjs.com/about-npm" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i4-2"><label for="i4-2">Linters & Formatters</label><a href="https://eslint.org/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="i4-3"><label for="i4-3">Intro to Frameworks</label><a href="https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+        </div>
+
+        <div class="stage-section" data-stage="professional">
+            <h2 class="stage-title professional">🏆 Stage 3: Professional</h2>
+            <div class="progress-bar-container"><div class="progress-bar professional"></div></div>
+            <details class="stage-professional">
+                <summary>Advanced Language Concepts</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="p1-1"><label for="p1-1">The <code>this</code> Keyword</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p1-2"><label for="p1-2">Prototypes & Inheritance</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p1-3"><label for="p1-3">Closures</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p1-4"><label for="p1-4">Generators & Iterators</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>JS Engines & Performance</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="p2-1"><label for="p2-1">JIT Compilation</label><a href="https://developer.mozilla.org/en-US/docs/Glossary/JIT" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p2-2"><label for="p2-2">Memory Management</label><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p2-3"><label for="p2-3">Performance Patterns</label><a href="https://web.dev/articles/debounce-your-input-handlers" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>Architecture & Design Patterns</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="p3-1"><label for="p3-1">Programming Paradigms</label><a href="https://www.freecodecamp.org/news/paradigms-of-programming-functional-and-object-oriented/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p3-2"><label for="p3-2">Design Patterns</label><a href="https://www.patterns.dev/posts/classic-design-patterns/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p3-3"><label for="p3-3">Accessibility (a11y)</label><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+             <details class="stage-professional">
+                <summary>Data Structures & Algorithms</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="p4-1"><label for="p4-1">Data Structures in JS</label><a href="https://www.freecodecamp.org/news/data-structures-in-javascript-with-examples/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p4-2"><label for="p4-2">Algorithm Concepts</label><a href="https://www.freecodecamp.org/news/javascript-algorithms-explained-with-examples/" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>Mastering the Ecosystem</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="p5-1"><label for="p5-1">TypeScript</label><a href="https://www.typescriptlang.org/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p5-2"><label for="p5-2">Advanced Tooling (Vite/Webpack)</label><a href="https://vitejs.dev/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p5-3"><label for="p5-3">Testing Strategies</label><a href="https://web.dev/articles/testing-introduction" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="p5-4"><label for="p5-4">CI/CD Pipelines</label><a href="https://docs.github.com/en/actions" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+        </div>
+        
+    </div>
+    
+    <footer>
+        <p>JavaScript Dashboard | Generated on July 20, 2025</p>
+    </footer>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-checkbox');
+        const allCheckboxes = document.querySelectorAll('.details-content input[type="checkbox"]');
+        const stages = document.querySelectorAll('.stage-section');
+
+        // ---- THEME LOGIC ----
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.checked = false;
+            }
+        };
+
+        themeToggle.addEventListener('change', () => {
+            const theme = themeToggle.checked ? 'dark' : 'light';
+            localStorage.setItem('js-dashboard-theme', theme);
+            applyTheme(theme);
+        });
+        
+        // ---- CHECKLIST & PROGRESS LOGIC ----
+        const updateProgress = (stageElement) => {
+            const stageName = stageElement.dataset.stage;
+            const progressBar = stageElement.querySelector('.progress-bar');
+            const checkboxesInStage = stageElement.querySelectorAll('input[type="checkbox"]');
+            
+            const total = checkboxesInStage.length;
+            const completed = Array.from(checkboxesInStage).filter(cb => cb.checked).length;
+            
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            progressBar.style.width = `${percentage}%`;
+            progressBar.textContent = `${percentage}%`;
+        };
+        
+        const saveState = () => {
+            const state = {};
+            allCheckboxes.forEach(cb => {
+                state[cb.id] = cb.checked;
+            });
+            localStorage.setItem('js-dashboard-progress', JSON.stringify(state));
+        };
+        
+        const loadState = () => {
+            const savedState = JSON.parse(localStorage.getItem('js-dashboard-progress')) || {};
+            allCheckboxes.forEach(cb => {
+                cb.checked = savedState[cb.id] || false;
+                const label = document.querySelector(`label[for="${cb.id}"]`);
+                if(label) {
+                    label.classList.toggle('completed', cb.checked);
+                }
+            });
+        };
+
+        allCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                // Update label style
+                const label = document.querySelector(`label[for="${cb.id}"]`);
+                if(label) {
+                    label.classList.toggle('completed', cb.checked);
+                }
+                
+                // Save state and update progress
+                saveState();
+                const parentStage = cb.closest('.stage-section');
+                if (parentStage) {
+                    updateProgress(parentStage);
+                }
+            });
+        });
+        
+        // ---- INITIALIZATION ----
+        function init() {
+            // Load theme
+            const savedTheme = localStorage.getItem('js-dashboard-theme') || 'light';
+            applyTheme(savedTheme);
+            
+            // Load progress
+            loadState();
+            
+            // Initial progress calculation
+            stages.forEach(stage => {
+                updateProgress(stage);
+            });
+        }
+        
+        init();
+    });
+</script>
+
+</body>
+</html>
