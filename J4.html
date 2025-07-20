@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Learning Roadmap: 3 Stages</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stage-beginner: #4285F4; /* Google Blue */
+            --stage-intermediate: #0F9D58; /* Google Green */
+            --stage-professional: #3f51b5; /* Indigo */
+            --bg-color: #f1f3f4;
+            --container-bg: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 1rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+        }
+        
+        .search-bar svg {
+            fill: var(--text-secondary);
+            margin-right: 0.75rem;
+        }
+
+        .search-bar .title {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .mindmap-card {
+            background: var(--container-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+        }
+
+        .mindmap-card h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 2.5rem 0;
+        }
+        
+        .stage-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .stage-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stage-title.beginner { color: var(--stage-beginner); border-color: var(--stage-beginner); }
+        .stage-title.intermediate { color: var(--stage-intermediate); border-color: var(--stage-intermediate); }
+        .stage-title.professional { color: var(--stage-professional); border-color: var(--stage-professional); }
+
+        details {
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        details.stage-beginner { border-left-color: var(--stage-beginner); }
+        details.stage-intermediate { border-left-color: var(--stage-intermediate); }
+        details.stage-professional { border-left-color: var(--stage-professional); }
+        
+        summary {
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+        }
+        
+        summary:hover {
+            background-color: #f7f8f8;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary::after {
+            content: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="%235f6368"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>');
+            transform: rotate(0);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        details[open] > summary::after {
+            transform: rotate(180deg);
+        }
+
+        .details-content {
+            padding: 0 1.25rem 1.25rem 1.25rem;
+            background-color: #fafafa;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .details-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0;
+        }
+
+        .details-content li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            padding: 0.3rem 0;
+        }
+        
+        code {
+            background-color: var(--bg-color);
+            color: #c53929; /* Material Red */
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <header class="header">
+        <div class="search-bar">
+            <svg focusable="false" height="20px" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+            <span class="title">JavaScript Learning Roadmap</span>
+        </div>
+    </header>
+
+    <div class="mindmap-card">
+        <h1>JavaScript: From Beginner to Professional</h1>
+        
+        <div class="stage-section">
+            <h2 class="stage-title beginner">🌱 Stage 1: Beginner</h2>
+            <details class="stage-beginner" open>
+                <summary>Basics & Fundamentals</summary>
+                <div class="details-content"><ul><li><strong>Syntax:</strong> Statements, Comments, Case Sensitivity</li><li><strong>Variables & Scope:</strong> <code>var</code>, <code>let</code>, <code>const</code>, Global/Function Scope</li><li><strong>Data Types:</strong> Primitives (String, Number, Boolean) and Objects</li><li><strong>Operators:</strong> Arithmetic, Assignment, Comparison, Logical</li><li><strong>Control Flow:</strong> <code>if/else</code>, <code>switch</code>, Loops (<code>for</code>, <code>while</code>)</li><li><strong>Basic Data Structures:</strong> Objects & Arrays (creation and simple methods)</li></ul></div>
+            </details>
+            <details class="stage-beginner">
+                <summary>Core Function Concepts</summary>
+                <div class="details-content"><ul><li><strong>Function Basics:</strong> Declarations, Expressions, Parameters, Arguments, <code>return</code></li><li><strong>Simple DOM Interaction:</strong> An introduction to how functions change the webpage</li></ul></div>
+            </details>
+            <details class="stage-beginner">
+                <summary>Basic DOM Manipulation</summary>
+                <div class="details-content"><ul><li><strong>What is the DOM?:</strong> Understanding the Document Object Model</li><li><strong>Selecting Elements:</strong> <code>getElementById</code>, <code>querySelector</code></li><li><strong>Manipulating Content:</strong> <code>.textContent</code>, <code>.innerHTML</code></li><li><strong>Handling Events:</strong> <code>.addEventListener</code> for clicks and inputs</li></ul></div>
+            </details>
+        </div>
+
+        <div class="stage-section">
+            <h2 class="stage-title intermediate">🚀 Stage 2: Intermediate</h2>
+            <details class="stage-intermediate">
+                <summary>Asynchronous JavaScript</summary>
+                <div class="details-content"><ul><li><strong>The "Why":</strong> Understanding blocking vs. non-blocking code</li><li><strong>Callbacks:</strong> The original pattern and its pitfalls ("Callback Hell")</li><li><strong>Promises:</strong> <code>.then()</code>, <code>.catch()</code>, <code>.finally()</code>, <code>Promise.all()</code></li><li><strong>Async/Await:</strong> Modern syntax for cleaner asynchronous code</li><li><strong>The Event Loop:</strong> A high-level understanding of how async code is handled</li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Modern JS (ES6+)</summary>
+                <div class="details-content"><ul><li><strong>Core Features:</strong> Arrow Functions, Destructuring, Rest/Spread operators</li><li><strong>Advanced Data Structures:</strong> <code>Map</code>, <code>Set</code></li><li><strong>Modules:</strong> <code>import</code> and <code>export</code> for code organization</li><li><strong>Classes:</strong> Syntactic sugar for Object-Oriented Programming</li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Deeper DOM & Web APIs</summary>
+                <div class="details-content"><ul><li><strong>Advanced Selectors:</strong> <code>querySelectorAll</code>, <code>closest</code></li><li><strong>Traversing & Manipulating:</strong> Creating, appending, removing elements</li><li><strong>Web Storage API:</strong> Using <code>localStorage</code> and <code>sessionStorage</code></li><li><strong>Fetch API:</strong> Making network requests to get data from servers</li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Intro to Ecosystem & Tooling</summary>
+                <div class="details-content"><ul><li><strong>Package Management:</strong> Using <code>npm</code> or <code>yarn</code> to manage project dependencies</li><li><strong>Linters & Formatters:</strong> Using ESLint and Prettier for code quality</li><li><strong>Introduction to Frameworks:</strong> Understanding the "What" and "Why" of React, Vue, or Angular</li></ul></div>
+            </details>
+        </div>
+
+        <div class="stage-section">
+            <h2 class="stage-title professional">🏆 Stage 3: Professional</h2>
+            <details class="stage-professional">
+                <summary>Advanced Language Concepts</summary>
+                <div class="details-content"><ul><li><strong>The <code>this</code> Keyword:</strong> Mastering its context (Global, Object, Function, Class)</li><li><strong>Prototypes & Inheritance:</strong> Understanding JavaScript's core object model</li><li><strong>Closures:</strong> How functions remember their lexical scope</li><li><strong>Advanced Concepts:</strong> Generators, Iterators, Proxies, and the Reflect API</li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>JS Engines & Performance</summary>
+                <div class="details-content"><ul><li><strong>Engine Mechanics:</strong> JIT Compilation, Interpreter, Optimization</li><li><strong>Memory Management:</strong> The Call Stack and Memory Heap</li><li><strong>Performance Patterns:</strong> Debouncing, Throttling, Memoization, Code Splitting</li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>Architecture & Design Patterns</summary>
+                <div class="details-content"><ul><li><strong>Programming Paradigms:</strong> Functional (Immutability, Pure Functions) & OOP</li><li><strong>Design Patterns:</strong> Module, Singleton, Observer, Factory</li><li><strong>Application Architecture:</strong> Web Components, Micro-Frontends, PWAs</li><li><strong>Web Standards:</strong> Accessibility (a11y) and Internationalization (i18n)</li></ul></div>
+            </details>
+             <details class="stage-professional">
+                <summary>Data Structures & Algorithms</summary>
+                <div class="details-content"><ul><li><strong>Core Structures:</strong> Linked Lists, Stacks, Queues, Trees, Graphs</li><li><strong>Algorithms:</strong> Sorting, Searching, Traversal (BFS, DFS), Recursion</li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>Mastering the Ecosystem</summary>
+                <div class="details-content"><ul><li><strong>TypeScript:</strong> Adding static types to your projects</li><li><strong>Advanced Tooling:</strong> Bundlers (Vite/Webpack), Monorepo tools (Turborepo)</li><li><strong>Testing Strategies:</strong> Unit, Integration, and End-to-End (E2E) testing with Jest, Vitest, Cypress</li><li><strong>CI/CD Pipelines:</strong> Automating testing and deployment with GitHub Actions</li><li><strong>API Paradigms:</strong> Building and consuming REST, GraphQL, and gRPC APIs</li></ul></div>
+            </details>
+        </div>
+        
+    </div>
+    
+    <footer>
+        <p>Generated on July 20, 2025</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
