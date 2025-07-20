@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive React.js Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --stage-beginner: #007BFF; /* Blue */
+            --stage-intermediate: #28A745; /* Green */
+            --stage-professional: #6F42C1; /* Purple */
+            
+            --light-bg: #f1f3f4;
+            --light-container-bg: #ffffff;
+            --light-text-primary: #202124;
+            --light-text-secondary: #5f6368;
+            --light-border-color: #dadce0;
+
+            --dark-bg: #202124;
+            --dark-container-bg: #303134;
+            --dark-text-primary: #e8eaed;
+            --dark-text-secondary: #bdc1c6;
+            --dark-border-color: #5f6368;
+
+            --bg-color: var(--light-bg);
+            --container-bg: var(--light-container-bg);
+            --text-primary: var(--light-text-primary);
+            --text-secondary: var(--light-text-secondary);
+            --border-color: var(--light-border-color);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 1rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            --bg-color: var(--dark-bg);
+            --container-bg: var(--dark-container-bg);
+            --text-primary: var(--dark-text-primary);
+            --text-secondary: var(--dark-text-secondary);
+            --border-color: var(--dark-border-color);
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+            margin-right: 1rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        .search-bar svg {
+            fill: #61DAFB; /* React Blue */
+            margin-right: 0.75rem;
+        }
+
+        .search-bar .title {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 48px;
+        }
+
+        .theme-switch input {
+            display:none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 3px;
+            content: "";
+            height: 18px;
+            left: 3px;
+            position: absolute;
+            transition: .4s;
+            width: 18px;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--stage-professional);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .mindmap-card {
+            background: var(--container-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .mindmap-card h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 2.5rem 0;
+        }
+        
+        .stage-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .stage-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid;
+            margin-bottom: 1rem;
+        }
+        
+        .stage-title.beginner { color: var(--stage-beginner); border-color: var(--stage-beginner); }
+        .stage-title.intermediate { color: var(--stage-intermediate); border-color: var(--stage-intermediate); }
+        .stage-title.professional { color: var(--stage-professional); border-color: var(--stage-professional); }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            text-align: center;
+            color: white;
+            font-size: 0.7rem;
+            line-height: 12px;
+            font-weight: bold;
+            transition: width 0.4s ease-in-out;
+        }
+        .progress-bar.beginner { background-color: var(--stage-beginner); }
+        .progress-bar.intermediate { background-color: var(--stage-intermediate); }
+        .progress-bar.professional { background-color: var(--stage-professional); }
+
+        details {
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        details.stage-beginner { border-left-color: var(--stage-beginner); }
+        details.stage-intermediate { border-left-color: var(--stage-intermediate); }
+        details.stage-professional { border-left-color: var(--stage-professional); }
+        
+        summary {
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            transition: background-color 0.2s ease;
+        }
+        
+        summary:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        
+        body.dark-mode summary:hover {
+             background-color: rgba(255,255,255,0.05);
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary::after {
+            content: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="%235f6368"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>');
+            transform: rotate(0);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        details[open] > summary::after {
+            transform: rotate(180deg);
+        }
+
+        .details-content {
+            padding: 0 1.25rem 1.25rem 1.25rem;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .details-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0;
+        }
+
+        .details-content li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            padding: 0.3rem 0;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .details-content li input[type="checkbox"] {
+            margin-right: 0.75rem;
+            min-width: 16px;
+            min-height: 16px;
+        }
+        
+        .details-content li label {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        
+        .details-content li label.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .resource-link {
+            margin-left: auto;
+            padding-left: 0.5rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .resource-link:hover {
+            opacity: 1;
+        }
+        
+        code {
+            background-color: rgba(0,0,0,0.05);
+            color: #d9480f; 
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        body.dark-mode code {
+             background-color: rgba(255,255,255,0.1);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <header class="header">
+        <div class="search-bar">
+            <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" height="20px"><path d="M512 85.333333c-235.637333 0-426.666667 191.029333-426.666667 426.666667s191.029333 426.666667 426.666667 426.666667 426.666667-191.029333 426.666667-426.666667S747.637333 85.333333 512 85.333333z m0 768c-186.506667 0-337.066667-150.56-337.066667-337.066667S325.493333 179.2 512 179.2s337.066667 150.56 337.066667 337.066667S698.506667 853.333333 512 853.333333z"  ></path><path d="M512 490.666667c-8.533333 0-17.066667-4.266667-21.333333-12.8-17.066667-34.133333-34.133333-102.4-34.133334-170.666667 0-51.2 17.066667-93.866667 55.466667-93.866667 38.4 0 55.466667 42.666667 55.466667 93.866667 0 68.266667-17.066667 136.533333-34.133333 170.666667-4.266667 8.533333-12.8 12.8-21.333334 12.8z m0-256c-12.8 0-12.8 21.333333-12.8 51.2 0 46.933333 12.8 102.4 25.6 136.533333 4.266667-12.8 12.8-68.266667 12.8-136.533333 0-29.866667 0-51.2-12.8-51.2z"  ></path><path d="M725.333333 640c-8.533333 0-17.066667-4.266667-21.333333-12.8-17.066667-34.133333-68.266667-85.333333-192-85.333333-123.733333 0-174.933333 51.2-192 85.333333-4.266667 8.533333-12.8 12.8-21.333333 12.8s-17.066667-4.266667-21.333334-12.8c-12.8-21.333333-12.8-42.666667-12.8-64 0-55.466667 51.2-102.4 115.2-123.733333l-42.666666-72.533334c-8.533333-12.8-4.266667-29.866667 8.533333-38.4 12.8-8.533333 29.866667-4.266667 38.4 8.533334l46.933333 81.066666c34.133333-8.533333 72.533333-12.8 110.933334-12.8s76.8 4.266667 110.933333 12.8l46.933334-81.066666c8.533333-12.8 25.6-17.066667 38.4-8.533334 12.8 8.533333 17.066667 25.6 8.533333 38.4l-42.666667 72.533334c64 21.333333 115.2 68.266667 115.2 123.733333 0 21.333333 0 42.666667-12.8 64-4.266667 8.533333-12.8 12.8-21.333333 12.8z m-213.333333-128c93.866667 0 132.266667 38.4 149.333333 64-4.266667 0-4.266667-4.266667-12.8-8.533333-21.333333-21.333333-59.733333-46.933333-136.533333-46.933334-76.8 0-115.2 25.6-136.533333 46.933334-8.533333 4.266667-8.533333 8.533333-12.8 8.533333 17.066667-25.6 55.466667-64 149.333333-64z"  ></path></svg>
+            <span class="title">Interactive React.js Dashboard</span>
+        </div>
+        <div class="theme-switch-wrapper">
+          <label class="theme-switch" for="theme-checkbox">
+            <input type="checkbox" id="theme-checkbox" />
+            <div class="slider"></div>
+          </label>
+        </div>
+    </header>
+
+    <div class="mindmap-card">
+        <h1>React.js: From Beginner to Professional</h1>
+        
+        <div class="stage-section" data-stage="beginner">
+            <h2 class="stage-title beginner">🌱 Stage 1: Beginner</h2>
+            <div class="progress-bar-container"><div class="progress-bar beginner"></div></div>
+            <details class="stage-beginner" open>
+                <summary>Core Concepts & Setup</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-b1-1"><label for="r-b1-1">What is React? (Declarative, Component-Based)</label><a href="https://react.dev/learn" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-b1-2"><label for="r-b1-2">Setting up a React Project with Vite</label><a href="https://react.dev/learn/start-a-new-react-project" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-b1-3"><label for="r-b1-3">Understanding JSX</label><a href="https://react.dev/learn/writing-markup-with-jsx" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-beginner">
+                <summary>Building with Components</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-b2-1"><label for="r-b2-1">Functional Components & Props</label><a href="https://react.dev/learn/your-first-component" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-b2-2"><label for="r-b2-2">Conditional Rendering</label><a href="https://react.dev/learn/conditional-rendering" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-b2-3"><label for="r-b2-3">Rendering Lists with <code>.map()</code></label><a href="https://react.dev/learn/rendering-lists" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-beginner">
+                <summary>State & Events</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-b3-1"><label for="r-b3-1">Handling Events (<code>onClick</code>, <code>onChange</code>)</label><a href="https://react.dev/learn/responding-to-events" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-b3-2"><label for="r-b3-2">State Management with <code>useState</code></label><a href="https://react.dev/learn/state-a-components-memory" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-b3-3"><label for="r-b3-3">Sharing State Between Components</label><a href="https://react.dev/learn/sharing-state-between-components" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+        </div>
+
+        <div class="stage-section" data-stage="intermediate">
+            <h2 class="stage-title intermediate">🚀 Stage 2: Intermediate</h2>
+            <div class="progress-bar-container"><div class="progress-bar intermediate"></div></div>
+            <details class="stage-intermediate">
+                <summary>Hooks In-Depth</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-i1-1"><label for="r-i1-1">Side Effects with <code>useEffect</code></label><a href="https://react.dev/learn/synchronizing-with-effects" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-i1-2"><label for="r-i1-2">Managing Complex State with <code>useReducer</code></label><a href="https://react.dev/learn/extracting-state-logic-into-a-reducer" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-i1-3"><label for="r-i1-3">Avoiding Prop Drilling with <code>useContext</code></label><a href="https://react.dev/learn/passing-data-deeply-with-context" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-i1-4"><label for="r-i1-4">Accessing DOM elements with <code>useRef</code></label><a href="https://react.dev/learn/manipulating-the-dom-with-refs" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Building Forms</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-i2-1"><label for="r-i2-1">Controlled Components</label><a href="https://react.dev/learn/sharing-state-between-components#controlled-and-uncontrolled-components" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-i2-2"><label for="r-i2-2">Form Submission & Validation</label><a href="https://react.dev/reference/react-dom/components/form" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-intermediate">
+                <summary>Routing & Styling</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-i3-1"><label for="r-i3-1">Client-Side Routing with React Router</label><a href="https://reactrouter.com/en/main/start/tutorial" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-i3-2"><label for="r-i3-2">Styling Strategies (CSS Modules, Styled Components)</label><a href="https://react.dev/learn/sharing-styles" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+        </div>
+
+        <div class="stage-section" data-stage="professional">
+            <h2 class="stage-title professional">🏆 Stage 3: Professional</h2>
+            <div class="progress-bar-container"><div class="progress-bar professional"></div></div>
+            <details class="stage-professional">
+                <summary>Performance Optimization</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-p1-1"><label for="r-p1-1">Memoizing with <code>React.memo</code></label><a href="https://react.dev/reference/react/memo" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p1-2"><label for="r-p1-2"><code>useCallback</code> and <code>useMemo</code></label><a href="https://react.dev/learn/reusing-logic-with-custom-hooks#should-you-use-a-hook" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p1-3"><label for="r-p1-3">Code Splitting with <code>React.lazy</code> & Suspense</label><a href="https://react.dev/reference/react/lazy" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p1-4"><label for="r-p1-4">Profiling with React DevTools</label><a href="https://react.dev/learn/react-developer-tools" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>Advanced State Management & Data Fetching</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-p2-1"><label for="r-p2-1">Redux Toolkit</label><a href="https://redux-toolkit.js.org/introduction/getting-started" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p2-2"><label for="r-p2-2">Modern State Libraries (Zustand)</label><a href="https://zustand-demo.pmnd.rs/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p2-3"><label for="r-p2-3">Data Fetching with TanStack Query (React Query)</label><a href="https://tanstack.com/query/latest/docs/react/overview" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+            <details class="stage-professional">
+                <summary>Testing & The Broader Ecosystem</summary>
+                <div class="details-content"><ul><li><input type="checkbox" id="r-p3-1"><label for="r-p3-1">Unit Testing with Jest & React Testing Library</label><a href="https://testing-library.com/docs/react-testing-library/intro/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p3-2"><label for="r-p3-2">E2E Testing with Cypress or Playwright</label><a href="https://www.cypress.io/" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p3-3"><label for="r-p3-3">Using TypeScript with React</label><a href="https://react.dev/learn/typescript" target="_blank" class="resource-link">🔗</a></li><li><input type="checkbox" id="r-p3-4"><label for="r-p3-4">React Frameworks (Next.js)</label><a href="https://nextjs.org/docs" target="_blank" class="resource-link">🔗</a></li></ul></div>
+            </details>
+        </div>
+        
+    </div>
+    
+    <footer>
+        <p>React.js Dashboard | Generated on July 20, 2025</p>
+    </footer>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-checkbox');
+        const allCheckboxes = document.querySelectorAll('.details-content input[type="checkbox"]');
+        const stages = document.querySelectorAll('.stage-section');
+
+        // ---- THEME LOGIC ----
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.checked = false;
+            }
+        };
+
+        themeToggle.addEventListener('change', () => {
+            const theme = themeToggle.checked ? 'dark' : 'light';
+            localStorage.setItem('react-dashboard-theme', theme);
+            applyTheme(theme);
+        });
+        
+        // ---- CHECKLIST & PROGRESS LOGIC ----
+        const updateProgress = (stageElement) => {
+            const progressBar = stageElement.querySelector('.progress-bar');
+            const checkboxesInStage = stageElement.querySelectorAll('input[type="checkbox"]');
+            
+            const total = checkboxesInStage.length;
+            const completed = Array.from(checkboxesInStage).filter(cb => cb.checked).length;
+            
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            progressBar.style.width = `${percentage}%`;
+            progressBar.textContent = `${percentage}%`;
+        };
+        
+        const saveState = () => {
+            const state = {};
+            allCheckboxes.forEach(cb => {
+                state[cb.id] = cb.checked;
+            });
+            localStorage.setItem('react-dashboard-progress', JSON.stringify(state));
+        };
+        
+        const loadState = () => {
+            const savedState = JSON.parse(localStorage.getItem('react-dashboard-progress')) || {};
+            allCheckboxes.forEach(cb => {
+                cb.checked = savedState[cb.id] || false;
+                const label = document.querySelector(`label[for="${cb.id}"]`);
+                if(label) {
+                    label.classList.toggle('completed', cb.checked);
+                }
+            });
+        };
+
+        allCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const label = document.querySelector(`label[for="${cb.id}"]`);
+                if(label) {
+                    label.classList.toggle('completed', cb.checked);
+                }
+                
+                saveState();
+                const parentStage = cb.closest('.stage-section');
+                if (parentStage) {
+                    updateProgress(parentStage);
+                }
+            });
+        });
+        
+        // ---- INITIALIZATION ----
+        function init() {
+            const savedTheme = localStorage.getItem('react-dashboard-theme') || 'light';
+            applyTheme(savedTheme);
+            
+            loadState();
+            
+            stages.forEach(stage => {
+                updateProgress(stage);
+            });
+        }
+        
+        init();
+    });
+</script>
+
+</body>
+</html>
