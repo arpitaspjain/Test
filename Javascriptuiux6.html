@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive JavaScript Mind Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Theming (Refined for better contrast and harmony) */
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --heading-color: #0d6efd;
+            --progress-bar-bg: #e9ecef;
+            --progress-bar-fill: #0d6efd;
+            --checkbox-color: #0d6efd;
+            --label-color: #495057;
+            --border-color: #dee2e6;
+            --subtle-hover-bg: #f1f3f5;
+            --accent-color: #198754; /* For success/completion */
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e9ecef;
+            --card-bg: #1c1c1e;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --heading-color: #4dabf7;
+            --progress-bar-bg: #343a40;
+            --progress-bar-fill: #4dabf7;
+            --checkbox-color: #4dabf7;
+            --label-color: #adb5bd;
+            --border-color: #495057;
+            --subtle-hover-bg: #2c2c2e;
+            --accent-color: #20c997;
+        }
+
+        /* General Styles (Improved readability and responsiveness) */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-top: 120px; /* Increased for header + TOC */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8; /* Improved line height */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 16px; /* Base font size */
+        }
+        
+        main {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 150px; font-size: 15px; }
+            main { padding: 0 10px; }
+        }
+
+        /* Header & Progress Bars (Added search and reset) */
+        .header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(var(--card-bg-rgb, 255, 255, 255), 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 12px 5%;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .header-container {
+            background-color: rgba(var(--card-bg-rgb, 28, 28, 30), 0.95);
+        }
+
+        #scroll-progress-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+        }
+        #scroll-progress-bar {
+            height: 100%; width: 0%; background: linear-gradient(90deg, var(--heading-color), var(--progress-bar-fill));
+            transition: width 0.2s ease;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--heading-color);
+        }
+
+        .dark-mode-toggle, .reset-btn, .export-btn {
+            cursor: pointer;
+            background: var(--subtle-hover-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+        }
+        .dark-mode-toggle:hover, .reset-btn:hover, .export-btn:hover {
+            background-color: var(--border-color);
+            transform: translateY(-1px);
+        }
+
+        #checklist-progress-container {
+            width: 100%; height: 14px; background-color: var(--progress-bar-bg);
+            border-radius: 7px; overflow: hidden; position: relative; margin-top: 10px;
+        }
+        #checklist-progress-bar {
+            width: 0%; height: 100%; background-color: var(--progress-bar-fill);
+            border-radius: 7px; transition: width 0.4s ease-out;
+        }
+        #checklist-progress-text {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px; color: #fff; font-weight: bold; mix-blend-mode: difference;
+        }
+
+        /* Search Bar (New UX Feature) */
+        .search-container {
+            width: 100%; margin: 10px 0;
+        }
+        #search-input {
+            width: 100%; padding: 10px; border: 1px solid var(--border-color);
+            border-radius: 8px; background: var(--card-bg); color: var(--text-color);
+            font-size: 14px; transition: border-color 0.2s;
+        }
+        #search-input:focus { border-color: var(--heading-color); outline: none; }
+
+        /* Table of Contents (New UX Feature for Navigation) */
+        #toc {
+            position: fixed; top: 80px; right: 20px; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 8px; padding: 10px;
+            box-shadow: var(--card-shadow); max-height: 300px; overflow-y: auto; z-index: 999;
+            display: none; /* Shown on larger screens */
+        }
+        #toc ul { padding: 0; list-style: none; }
+        #toc li { margin: 5px 0; }
+        #toc a { color: var(--text-color); text-decoration: none; transition: color 0.2s; }
+        #toc a:hover { color: var(--heading-color); }
+        @media (min-width: 1024px) { #toc { display: block; } }
+
+        /* Content Cards & Sections (Improved with per-level progress) */
+        .level-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 40px; /* Increased spacing */
+            padding: 30px;
+            transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s, transform 0.2s;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .level-card:hover { transform: translateY(-3px); }
+
+        .level-card h2 {
+            font-size: 2rem;
+            color: var(--heading-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-top: 0;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .level-progress {
+            height: 8px; background: var(--progress-bar-bg); border-radius: 4px; margin-top: 10px;
+        }
+        .level-progress-fill {
+            height: 100%; background: var(--accent-color); border-radius: 4px; transition: width 0.3s;
+        }
+        .level-progress-text { font-size: 0.9em; color: var(--label-color); margin-top: 5px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Collapsible Sections (Improved animations) */
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .collapsible-header:hover { background: var(--subtle-hover-bg); }
+        
+        .collapsible-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+            color: var(--text-color);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .collapsible-header .icon { transition: transform 0.3s ease; font-size: 1em; color: var(--label-color); }
+        .collapsible.open .icon { transform: rotate(180deg); }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .collapsible.open .collapsible-content {
+            opacity: 1;
+        }
+
+        /* Checkbox & List Styles (Added tooltips and icons) */
+        ul { list-style: none; padding-left: 0; margin-top: 15px; }
+        li {
+            margin-bottom: 14px; display: flex; align-items: flex-start;
+            padding: 8px; border-radius: 8px; transition: background-color 0.2s, transform 0.1s;
+            position: relative;
+        }
+        li:hover { background-color: var(--subtle-hover-bg); transform: translateX(3px); }
+
+        input[type="checkbox"] {
+            -webkit-appearance: none; appearance: none;
+            background-color: transparent; margin: 0;
+            font: inherit; color: currentColor;
+            width: 1.2em; height: 1.2em;
+            border: 2px solid var(--checkbox-color);
+            border-radius: 4px;
+            transform: translateY(0.15em);
+            margin-right: 12px;
+            cursor: pointer;
+            display: grid;
+            place-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+
+        input[type="checkbox"]::before {
+            content: "";
+            width: 0.7em; height: 0.7em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--card-bg);
+            background-color: var(--card-bg);
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        input[type="checkbox"]:checked { background-color: var(--checkbox-color); }
+        input[type="checkbox"]:checked::before { transform: scale(1); }
+        input[type="checkbox"]:focus { outline: 2px solid var(--heading-color); outline-offset: 2px; }
+
+        label {
+            color: var(--label-color);
+            cursor: pointer;
+            transition: color 0.3s;
+            position: relative;
+        }
+        label::after {
+            content: attr(data-tooltip);
+            position: absolute; bottom: 100%; left: 0; background: var(--subtle-hover-bg);
+            color: var(--text-color); padding: 5px 10px; border-radius: 4px; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s; box-shadow: var(--card-shadow);
+        }
+        label:hover::after { opacity: 1; }
+        li:has(input:checked) label {
+            text-decoration: line-through;
+            color: #888;
+        }
+        body.dark-mode li:has(input:checked) label { color: #666; }
+    </style>
+</head>
+<body>
+
+    <header class="header-container">
+        <div id="scroll-progress-container"><div id="scroll-progress-bar"></div></div>
+        <div class="controls">
+            <h1>JavaScript Roadmap 🗺️</h1>
+            <div style="display: flex; gap: 10px;">
+                <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle Dark Mode">
+                    <span id="theme-icon">🌙</span>
+                    <span id="theme-text">Dark Mode</span>
+                </button>
+                <button class="reset-btn" id="resetProgress" aria-label="Reset Progress">Reset</button>
+                <button class="export-btn" id="exportProgress" aria-label="Export Progress">Export</button>
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search topics..." aria-label="Search topics">
+        </div>
+        <div id="checklist-progress-container">
+            <div id="checklist-progress-bar"></div>
+            <span id="checklist-progress-text">0%</span>
+        </div>
+    </header>
+
+    <!-- Table of Contents (New) -->
+    <nav id="toc">
+        <h4>Jump to Level</h4>
+        <ul>
+            <li><a href="#level1">1. Beginner</a></li>
+            <li><a href="#level2">2. Intermediate</a></li>
+            <li><a href="#level3">3. Professional</a></li>
+            <li><a href="#level4">4. Expert</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="level-card" id="level1">
+            <h2><i class="fas fa-seedling"></i> 1. Beginner Level</h2>
+            <div class="level-progress"><div class="level-progress-fill" style="width: 0%;"></div></div>
+            <div class="level-progress-text">0% Complete</div>
+            
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content1"><h3><i class="fas fa-question-circle"></i> What is JavaScript?</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content1">
+                    <ul>
+                        <li><input type="checkbox" id="c1"><label for="c1" data-tooltip="JavaScript is a versatile language for web interactivity.">Scripting language for the web</label></li>
+                        <li><input type="checkbox" id="c2"><label for="c2" data-tooltip="Client-side runs in browser; server-side with Node.js.">Client-side vs. Server-side (Node.js)</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content2"><h3><i class="fas fa-code"></i> Basic Syntax and Structure</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content2">
+                    <ul>
+                        <li><input type="checkbox" id="c3"><label for="c3" data-tooltip="Use let and const for block-scoped variables.">Variables & Data Types: var, let, const</label></li>
+                        <li><input type="checkbox" id="c4"><label for="c4" data-tooltip="Primitives are immutable basic values.">Primitive Types: Number, String, Boolean, undefined, null, Symbol, BigInt</label></li>
+                        <li><input type="checkbox" id="c5"><label for="c5" data-tooltip="References point to complex data structures.">Reference Types: Object, Array, Function</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content3"><h3><i class="fas fa-calculator"></i> Operators</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content3">
+                    <ul>
+                        <li><input type="checkbox" id="c6"><label for="c6" data-tooltip="Operators perform actions on values.">Arithmetic, Comparison, Logical, Assignment</label></li>
+                        <li><input type="checkbox" id="c7"><label for="c7" data-tooltip="Concise if-else alternative.">Ternary Operator: `condition ? true : false`</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content4"><h3><i class="fas fa-random"></i> Control Flow & Functions</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content4">
+                    <ul>
+                        <li><input type="checkbox" id="c8"><label for="c8" data-tooltip="Control program flow based on conditions.">Conditional Statements: `if/else`, `switch`</label></li>
+                        <li><input type="checkbox" id="c9"><label for="c9" data-tooltip="Repeat code execution.">Loops: `for`, `while`, `do...while`</label></li>
+                        <li><input type="checkbox" id="c10"><label for="c10" data-tooltip="Reusable code blocks.">Functions: Declaration, Expression, Arrow</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content5"><h3><i class="fas fa-list"></i> Arrays & Objects</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content5">
+                    <ul>
+                        <li><input type="checkbox" id="c11"><label for="c11" data-tooltip="Manipulate arrays efficiently.">Array Methods: `.push()`, `.pop()`, `.slice()`, etc.</label></li>
+                        <li><input type="checkbox" id="c12"><label for="c12" data-tooltip="Key-value pairs for structured data.">Object Initialization & Property Access</label></li>
+                        <li><input type="checkbox" id="c13"><label for="c13" data-tooltip="Refers to the current object.">The `this` Keyword in Objects</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content6"><h3><i class="fas fa-mouse-pointer"></i> Basic DOM Manipulation & Events</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content6">
+                    <ul>
+                        <li><input type="checkbox" id="c14"><label for="c14" data-tooltip="Interact with HTML elements.">Selecting and modifying elements</label></li>
+                        <li><input type="checkbox" id="c15"><label for="c15" data-tooltip="Respond to user actions.">Handling Events with `addEventListener`</label></li>
+                        <li><input type="checkbox" id="c16"><label for="c16" data-tooltip="How events travel through DOM.">Event Propagation: Bubbling vs. Capturing</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="level-card" id="level2">
+            <h2><i class="fas fa-rocket"></i> 2. Intermediate Level</h2>
+            <div class="level-progress"><div class="level-progress-fill" style="width: 0%;"></div></div>
+            <div class="level-progress-text">0% Complete</div>
+            
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content7"><h3><i class="fas fa-forward"></i> ES6+ Features</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content7">
+                    <ul>
+                        <li><input type="checkbox" id="c17"><label for="c17" data-tooltip="Modern syntax improvements.">`let`, `const`, Template Literals, Destructuring</label></li>
+                        <li><input type="checkbox" id="c18"><label for="c18" data-tooltip="Spread for copying, rest for gathering.">Spread & Rest Operators, Default Parameters</label></li>
+                        <li><input type="checkbox" id="c19"><label for="c19" data-tooltip="Concise functions with lexical this.">Arrow Functions (Lexical `this`)</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content8"><h3><i class="fas fa-clock"></i> Asynchronous JavaScript</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content8">
+                    <ul>
+                        <li><input type="checkbox" id="c20"><label for="c20" data-tooltip="Functions passed as arguments.">Callbacks</label></li>
+                        <li><input type="checkbox" id="c21"><label for="c21" data-tooltip="Handle async results.">Promises: `.then()`, `.catch()`, `.finally()`</label></li>
+                        <li><input type="checkbox" id="c22"><label for="c22" data-tooltip="Synchronous-style async code.">Async/Await syntax</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible open" aria-expanded="true">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content9"><h3><i class="fas fa-brain"></i> Advanced Concepts</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content9">
+                    <ul>
+                        <li><input type="checkbox" id="c23"><label for="c23" data-tooltip="Functions remembering their scope.">Closures & Lexical Scoping</label></li>
+                        <li><input type="checkbox" id="c24"><label for="c24" data-tooltip="Organize code into files.">Modules: `import` / `export`</label></li>
+                        <li><input type="checkbox" id="c25"><label for="c25" data-tooltip="Functions that take/return functions.">Higher Order Functions: `map`, `filter`, `reduce`</label></li>
+                        <li><input type="checkbox" id="c26"><label for="c26" data-tooltip="Variable availability and lifting.">Scope, Hoisting, and the `this` keyword</label></li>
+                        <li><input type="checkbox" id="c27"><label for="c27" data-tooltip="Gracefully handle errors.">Error Handling with `try...catch...finally`</label></li>
+                        <li><input type="checkbox" id="c28"><label for="c28" data-tooltip="Pattern matching in strings.">Regular Expressions</label></li>
+                        <li><input type="checkbox" id="c29"><label for="c29" data-tooltip="Debug code effectively.">Browser Developer Tools & Debugging</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="level-card" id="level3">
+            <h2><i class="fas fa-pro"></i> 3. Professional Level</h2>
+            <div class="level-progress"><div class="level-progress-fill" style="width: 0%;"></div></div>
+            <div class="level-progress-text">0% Complete</div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content10"><h3><i class="fas fa-tools"></i> Advanced Functions & Patterns</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content10">
+                    <ul>
+                        <li><input type="checkbox" id="c30"><label for="c30" data-tooltip="Partial application and caching.">Currying & Memoization</label></li>
+                        <li><input type="checkbox" id="c31"><label for="c31" data-tooltip="Functions calling themselves.">Recursion</label></li>
+                        <li><input type="checkbox" id="c32"><label for="c32" data-tooltip="Reusable code structures.">Design Patterns: Module, Singleton, Observer, Factory</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content11"><h3><i class="fas fa-cogs"></i> JavaScript Engine & Event Loop</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content11">
+                    <ul>
+                        <li><input type="checkbox" id="c33"><label for="c33" data-tooltip="Automatic memory cleanup.">Memory Management & Garbage Collection</label></li>
+                        <li><input type="checkbox" id="c34"><label for="c34" data-tooltip="Core runtime components.">Call Stack, Heap, Event Loop</label></li>
+                        <li><input type="checkbox" id="c35"><label for="c35" data-tooltip="Promise vs. setTimeout tasks.">Microtasks vs. Macrotasks</label></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content12"><h3><i class="fas fa-object-group"></i> Advanced OOP & APIs</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content12">
+                    <ul>
+                        <li><input type="checkbox" id="c36"><label for="c36" data-tooltip="ES6 class syntax.">Classes, Inheritance, `super`</label></li>
+                        <li><input type="checkbox" id="c37"><label for="c37" data-tooltip="Network communication.">Fetch API & WebSockets</label></li>
+                        <li><input type="checkbox" id="c38"><label for="c38" data-tooltip="Interact with backend services.">Handling REST APIs & JSON</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content13"><h3><i class="fas fa-tachometer-alt"></i> Performance & Storage</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content13">
+                    <ul>
+                        <li><input type="checkbox" id="c39"><label for="c39" data-tooltip="Optimize for speed.">Lazy Loading, Debouncing & Throttling</label></li>
+                        <li><input type="checkbox" id="c40"><label for="c40" data-tooltip="Reduce bundle size.">Code Splitting & Tree Shaking</label></li>
+                        <li><input type="checkbox" id="c41"><label for="c41" data-tooltip="Client-side data persistence.">Web Storage: `LocalStorage`, `SessionStorage`, `IndexedDB`</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content14"><h3><i class="fas fa-lightbulb"></i> Modern Paradigms & Tooling</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content14">
+                    <ul>
+                        <li><input type="checkbox" id="c42"><label for="c42" data-tooltip="Immutable data and pure functions.">Functional Programming Concepts</label></li>
+                        <li><input type="checkbox" id="c43"><label for="c43" data-tooltip="Advanced async control.">Async Iterators & Generators, Web Workers</label></li>
+                        <li><input type="checkbox" id="c44"><label for="c44" data-tooltip="Build complex apps.">Frameworks (React, Angular, Vue), Libraries (RxJS)</label></li>
+                        <li><input type="checkbox" id="c45"><label for="c45" data-tooltip="Static typing for JS.">TypeScript with JavaScript</label></li>
+                        <li><input type="checkbox" id="c46"><label for="c46" data-tooltip="Query language for APIs.">GraphQL</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content15"><h3><i class="fas fa-shield-alt"></i> Testing & Security</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content15">
+                    <ul>
+                        <li><input type="checkbox" id="c47"><label for="c47" data-tooltip="Ensure code reliability.">Unit & E2E Testing (Jest, Cypress)</label></li>
+                        <li><input type="checkbox" id="c48"><label for="c48" data-tooltip="Write tests first.">TDD (Test-Driven Development)</label></li>
+                        <li><input type="checkbox" id="c49"><label for="c49" data-tooltip="Protect against vulnerabilities.">Security: XSS, CSRF, CORS, CSP</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="level-card" id="level4">
+            <h2><i class="fas fa-star"></i> 4. Expert Level Topics</h2>
+            <div class="level-progress"><div class="level-progress-fill" style="width: 0%;"></div></div>
+            <div class="level-progress-text">0% Complete</div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content16"><h3><i class="fas fa-server"></i> Server-Side JavaScript (Node.js)</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content16">
+                    <ul>
+                        <li><input type="checkbox" id="c50"><label for="c50" data-tooltip="Create backend services.">Building APIs with Express.js</label></li>
+                        <li><input type="checkbox" id="c51"><label for="c51" data-tooltip="Store and retrieve data.">Working with Databases (SQL/NoSQL)</label></li>
+                        <li><input type="checkbox" id="c52"><label for="c52" data-tooltip="Secure user sessions.">JWT Authentication</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content17"><h3><i class="fas fa-network-wired"></i> Architecture & Distributed Systems</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content17">
+                    <ul>
+                        <li><input type="checkbox" id="c53"><label for="c53" data-tooltip="Scalable service design.">Microservices Architecture</label></li>
+                        <li><input type="checkbox" id="c54"><label for="c54" data-tooltip="Real-time communication.">WebSockets & Server-Sent Events (SSE)</label></li>
+                        <li><input type="checkbox" id="c55"><label for="c55" data-tooltip="Manage shared state.">Distributed State with Redis</label></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible" aria-expanded="false">
+                <div class="collapsible-header" tabindex="0" role="button" aria-controls="content18"><h3><i class="fas fa-cloud-upload-alt"></i> Deployment & Cloud</h3><i class="fas fa-chevron-down icon"></i></div>
+                <div class="collapsible-content" id="content18">
+                    <ul>
+                        <li><input type="checkbox" id="c56"><label for="c56" data-tooltip="Event-driven computing.">Serverless Computing (FaaS) with AWS Lambda</label></li>
+                        <li><input type="checkbox" id="c57"><label for="c57" data-tooltip="Package apps for consistency.">Containerization with Docker</label></li>
+                        <li><input type="checkbox" id="c58"><label for="c58" data-tooltip="Automate deployments.">CI/CD Pipelines</label></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            
+            // --- Dark Mode ---
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            const applyDarkMode = (isDark) => {
+                if (isDark) {
+                    body.classList.add('dark-mode');
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Light Mode';
+                } else {
+                    body.classList.remove('dark-mode');
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Dark Mode';
+                }
+                // For a CSS trick with rgba
+                const cardBg = getComputedStyle(body).getPropertyValue('--card-bg').trim();
+                const rgb = cardBg.startsWith('#') ? hexToRgb(cardBg) : cardBg.match(/\d+/g);
+                if (rgb) body.style.setProperty('--card-bg-rgb', `${rgb[0]}, ${rgb[1]}, ${rgb[2]}`);
+            };
+
+            darkModeToggle.addEventListener('click', () => {
+                const isDarkMode = body.classList.toggle('dark-mode');
+                localStorage.setItem('darkMode', isDarkMode);
+                applyDarkMode(isDarkMode);
+            });
+            
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? [ parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16) ] : null;
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'd') darkModeToggle.click();
+                if (e.key === 's') document.getElementById('search-input').focus();
+            });
+
+            // --- Scroll Progress Bar ---
+            const scrollProgressBar = document.getElementById('scroll-progress-bar');
+            window.addEventListener('scroll', () => {
+                const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                scrollProgressBar.style.width = `${scrollPercent}%`;
+            });
+
+            // --- Checklist Progress ---
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checklistProgressBar = document.getElementById('checklist-progress-bar');
+            const checklistProgressText = document.getElementById('checklist-progress-text');
+            const totalCheckboxes = checkboxes.length;
+            const storageKey = 'jsChecklistState';
+
+            const updateChecklistProgress = () => {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                const progress = totalCheckboxes > 0 ? (checkedCount / totalCheckboxes) * 100 : 0;
+                checklistProgressBar.style.width = `${progress}%`;
+                checklistProgressText.textContent = `${Math.round(progress)}%`;
+            };
+            
+            const saveState = () => {
+                const state = Array.from(checkboxes).reduce((acc, cb) => ({ ...acc, [cb.id]: cb.checked }), {});
+                localStorage.setItem(storageKey, JSON.stringify(state));
+            };
+
+            const loadState = () => {
+                const savedState = JSON.parse(localStorage.getItem(storageKey)) || {};
+                checkboxes.forEach(cb => {
+                    cb.checked = savedState[cb.id] || false;
+                });
+                updateChecklistProgress();
+            };
+
+            checkboxes.forEach(cb => cb.addEventListener('change', () => {
+                updateChecklistProgress();
+                saveState();
+            }));
+            
+            // --- Per-level Progress ---
+            const levels = document.querySelectorAll('.level-card');
+            levels.forEach(level => {
+                const levelCheckboxes = level.querySelectorAll('input[type="checkbox"]');
+                const progressFill = level.querySelector('.level-progress-fill');
+                const progressText = level.querySelector('.level-progress-text');
+                const updateLevelProgress = () => {
+                    const checked = level.querySelectorAll('input[type="checkbox"]:checked').length;
+                    const total = levelCheckboxes.length;
+                    const percent = total ? Math.round((checked / total) * 100) : 0;
+                    progressFill.style.width = `${percent}%`;
+                    progressText.textContent = `${percent}% Complete`;
+                };
+                levelCheckboxes.forEach(cb => cb.addEventListener('change', updateLevelProgress));
+                updateLevelProgress(); // Initial
+            });
+
+            // --- Collapsible Sections ---
+            const collapsibles = document.querySelectorAll('.collapsible');
+            collapsibles.forEach(collapsible => {
+                const header = collapsible.querySelector('.collapsible-header');
+                const content = collapsible.querySelector('.collapsible-content');
+                if(!header || !content) return;
+
+                header.addEventListener('click', () => {
+                    const isOpen = collapsible.classList.toggle('open');
+                    collapsible.setAttribute('aria-expanded', isOpen);
+                    if (isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    } else {
+                        content.style.maxHeight = '0px';
+                    }
+                });
+                
+                // Initialize open sections
+                if (collapsible.classList.contains('open')) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+
+            // --- Search Functionality ---
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase();
+                document.querySelectorAll('li').forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(query) ? 'flex' : 'none';
+                });
+            });
+
+            // --- Reset Progress ---
+            document.getElementById('resetProgress').addEventListener('click', () => {
+                if (confirm('Reset all progress?')) {
+                    checkboxes.forEach(cb => cb.checked = false);
+                    updateChecklistProgress();
+                    saveState();
+                    levels.forEach(level => {
+                        level.querySelector('.level-progress-fill').style.width = '0%';
+                        level.querySelector('.level-progress-text').textContent = '0% Complete';
+                    });
+                }
+            });
+
+            // --- Export Progress ---
+            document.getElementById('exportProgress').addEventListener('click', () => {
+                const state = JSON.parse(localStorage.getItem('jsChecklistState')) || {};
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'js-roadmap-progress.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // --- Initial Load ---
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            applyDarkMode(savedDarkMode);
+            loadState();
+        });
+    </script>
+</body>
+</html>
