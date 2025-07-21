@@ -3,224 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprehensive JavaScript Mind Map</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>JavaScript Roadmap Mind Map</title>
     <style>
-        :root {
-            --google-blue: #4285F4;
-            --google-red: #DB4437;
-            --google-yellow: #F4B400;
-            --google-green: #0F9D58;
-            --bg-color: #f1f3f4;
-            --container-bg: #ffffff;
-            --text-primary: #202124;
-            --text-secondary: #5f6368;
-            --border-color: #dadce0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            padding: 1rem;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .main-container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        
-        /* --- Header --- */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem 0;
-            margin-bottom: 1rem;
-        }
-
-        .search-bar {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            align-items: center;
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 0.5rem 1rem;
-            box-shadow: 0 1px 6px rgba(32,33,36,0.1);
-        }
-        
-        .search-bar svg {
-            fill: var(--text-secondary);
-            margin-right: 0.75rem;
-        }
-
-        .search-bar .title {
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
-        /* --- Main Content Card --- */
-        .mindmap-card {
-            background: var(--container-bg);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            padding: 2rem;
-        }
-
-        .mindmap-card h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 2rem 0;
-        }
-
-        details {
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.2s ease;
-        }
-        
-        details:last-of-type {
-            border-bottom: none;
-        }
-
-        summary {
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 1rem;
-            padding: 1rem 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            list-style: none; /* Remove default marker */
-        }
-        
-        summary:hover {
-            background-color: #f7f8f8;
-        }
-
-        summary::-webkit-details-marker { display: none; }
-
-        summary::after {
-            content: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="%235f6368"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>');
-            transform: rotate(0);
-            transition: transform 0.2s ease-in-out;
-        }
-        
-        details[open] > summary::after {
-            transform: rotate(180deg);
-        }
-
-        .details-content {
-            padding: 0.5rem 0.5rem 1.5rem 0.5rem;
-        }
-
-        .details-content ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .details-content li {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            padding: 0.3rem 0 0.3rem 1rem;
-            border-left: 2px solid var(--google-blue);
-            margin-bottom: 0.5rem;
-        }
-        
-        code {
-            background-color: var(--bg-color);
-            color: var(--google-red);
-            padding: 0.2em 0.4em;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-        
-        .new-topic {
-            color: var(--google-green);
-            font-weight: 500;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        h1 { text-align: center; color: #333; }
+        .mindmap { max-width: 1200px; margin: 0 auto; }
+        ul { list-style-type: none; padding-left: 20px; }
+        li { margin: 10px 0; background: #fff; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        details summary { cursor: pointer; font-weight: bold; color: #007BFF; }
+        details[open] summary { color: #0056b3; }
+        .note { font-style: italic; color: #666; }
     </style>
 </head>
 <body>
-
-<div class="main-container">
-
-    <header class="header">
-        <div class="search-bar">
-            <svg focusable="false" height="20px" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-            <span class="title">Comprehensive JavaScript Mind Map</span>
-        </div>
-    </header>
-
-    <div class="mindmap-card">
-        <h1>JavaScript: The Complete Picture</h1>
+    <h1>JavaScript Roadmap Mind Map</h1>
+    <div class="mindmap">
+        <p class="note">This roadmap is based on the provided PDF. Find the detailed version of this roadmap along with resources and other roadmaps at roadmap.sh (http://).</p>
         
-        <details>
-            <summary><strong>Toggle Complete Overview</strong></summary>
-            <div class="details-content"><ul><li><strong>Basics & Fundamentals:</strong> Syntax, Variables, Data Types, Operators, Control Flow, Functions, Data Structures.</li><li><strong>DOM & Web APIs:</strong> Selectors, Manipulation, Events, Storage, Web Workers, Canvas, Geolocation.</li><li><strong>Asynchronous JS:</strong> Event Loop, Callbacks, Promises, Async/Await.</li><li><strong>Modern JS (ES6+):</strong> Arrow Functions, Destructuring, Classes, Modules, Optional Chaining, Private Fields.</li><li><strong>Advanced Concepts:</strong> Prototypes, `this`, Closures, Memory Management, Generators & Iterators.</li><li class="new-topic"><strong>Architectures & Standards:</strong> Web Components, Server Components, Micro-Frontends, PWA, Accessibility (a11y), Internationalization (i18n).</li><li><strong>Paradigms & Patterns:</strong> OOP, Functional Programming, Design Patterns (Singleton, Observer, etc.).</li><li><strong>Ecosystem & Tooling:</strong> TypeScript, Runtimes (Node, Deno), Package Managers (npm), Bundlers (Vite), Linters.</li><li><strong>Frameworks & Libraries:</strong> Frontend (React), Backend (Express), Testing (Jest), Mobile (React Native), SSGs (Next.js).</li><li><strong>Performance & Security:</strong> Debouncing, Code Splitting, CORS, XSS.</li></ul></div>
+        <details open>
+            <summary>JavaScript</summary>
+            <ul>
+                <li>
+                    <details>
+                        <summary>Introduction to JavaScript</summary>
+                        <ul>
+                            <li>What is JavaScript?</li>
+                            <li>History of JavaScript</li>
+                            <li>JavaScript Versions</li>
+                            <li>How to run JavaScript?</li>
+                        </ul>
+                    </details>
+                </li>
+                
+                <li>
+                    <details>
+                        <summary>Beginner Topics / start with these</summary>
+                        <ul>
+                            <li>
+                                <details>
+                                    <summary>All About Variables</summary>
+                                    <ul>
+                                        <li>
+                                            <details>
+                                                <summary>Variable Declarations</summary>
+                                                <ul>
+                                                    <li>var</li>
+                                                    <li>let</li>
+                                                    <li>const</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>Variable Naming Rules</li>
+                                        <li>Hoisting</li>
+                                        <li>
+                                            <details>
+                                                <summary>Variable Scopes</summary>
+                                                <ul>
+                                                    <li>Global</li>
+                                                    <li>Function</li>
+                                                    <li>Block</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Data Types</summary>
+                                    <ul>
+                                        <li>
+                                            <details>
+                                                <summary>Primitive Types</summary>
+                                                <ul>
+                                                    <li>string</li>
+                                                    <li>number</li>
+                                                    <li>bigint</li>
+                                                    <li>boolean</li>
+                                                    <li>null</li>
+                                                    <li>undefined</li>
+                                                    <li>Symbol</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>typeof operator</li>
+                                        <li>
+                                            <details>
+                                                <summary>Object</summary>
+                                                <ul>
+                                                    <li>Built-in Objects</li>
+                                                    <li>Object Prototype</li>
+                                                    <li>Prototypal Inheritance</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+                
+                <li>
+                    <details>
+                        <summary>Intermediate Topics / pick them after beginner topics</summary>
+                        <ul>
+                            <li>
+                                <details>
+                                    <summary>Data Structures</summary>
+                                    <ul>
+                                        <li>
+                                            <details>
+                                                <summary>Indexed Collections</summary>
+                                                <ul>
+                                                    <li>Arrays</li>
+                                                    <li>Typed Arrays</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>
+                                            <details>
+                                                <summary>Keyed Collections</summary>
+                                                <ul>
+                                                    <li>Map</li>
+                                                    <li>Weak Map</li>
+                                                    <li>Set</li>
+                                                    <li>Weak Set</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>
+                                            <details>
+                                                <summary>Structured Data</summary>
+                                                <ul>
+                                                    <li>JSON</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Type Casting</summary>
+                                    <ul>
+                                        <li>Implicit Type Casting</li>
+                                        <li>Explicit Type Casting</li>
+                                        <li>Type Conversion vs Coercion</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Equality Comparisons</summary>
+                                    <ul>
+                                        <li>
+                                            <details>
+                                                <summary>Value Comparison Operators</summary>
+                                                <ul>
+                                                    <li>==</li>
+                                                    <li>===</li>
+                                                    <li>Object.is</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>
+                                            <details>
+                                                <summary>Equality Algorithms</summary>
+                                                <ul>
+                                                    <li>isLooselyEqual</li>
+                                                    <li>isStrictlyEqual</li>
+                                                    <li>SameValueZero</li>
+                                                    <li>SameValue</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Loops and Iterations</summary>
+                                    <ul>
+                                        <li>for statement</li>
+                                        <li>do...while statement</li>
+                                        <li>while statement</li>
+                                        <li>break / continue</li>
+                                        <li>Labeled Statements</li>
+                                        <li>for...in statement</li>
+                                        <li>for...of statement</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Control Flow</summary>
+                                    <ul>
+                                        <li>
+                                            <details>
+                                                <summary>Conditional Statements</summary>
+                                                <ul>
+                                                    <li>If...else</li>
+                                                    <li>Switch</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>
+                                            <details>
+                                                <summary>Exception Handling</summary>
+                                                <ul>
+                                                    <li>throw statement</li>
+                                                    <li>try / catch / finally</li>
+                                                    <li>Utilizing Error Objects</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Expressions and Operators</summary>
+                                    <ul>
+                                        <li>Assignment Operators</li>
+                                        <li>Comparison Operators</li>
+                                        <li>Arithmetic Operators</li>
+                                        <li>Bitwise Operators</li>
+                                        <li>Logical Operators</li>
+                                        <li>BigInt Operators</li>
+                                        <li>String Operators</li>
+                                        <li>Conditional Operators</li>
+                                        <li>Comma Operators</li>
+                                        <li>Unary Operators</li>
+                                        <li>Relational Operators</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Functions</summary>
+                                    <ul>
+                                        <li>Defining and Calling Functions</li>
+                                        <li>
+                                            <details>
+                                                <summary>Function Parameters</summary>
+                                                <ul>
+                                                    <li>Default Params</li>
+                                                    <li>Rest Params</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>Arrow Functions</li>
+                                        <li>IIFEs</li>
+                                        <li>
+                                            <details>
+                                                <summary>Scope &amp; Function Stack</summary>
+                                                <ul>
+                                                    <li>Recursion</li>
+                                                    <li>Lexical Scoping</li>
+                                                    <li>Closures</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>arguments object</li>
+                                        <li>Built-in Functions</li>
+                                    </ul>
+                                </details>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+                
+                <li>
+                    <details>
+                        <summary>Advanced Topics / pick these after intermediate topics</summary>
+                        <ul>
+                            <li>
+                                <details>
+                                    <summary>Using (this) keyword ____</summary>
+                                    <ul>
+                                        <li>using it alone</li>
+                                        <li>in a function</li>
+                                        <li>in a method</li>
+                                        <li>in event handlers</li>
+                                        <li>in arrow functions</li>
+                                        <li>
+                                            <details>
+                                                <summary>Explicit Binding</summary>
+                                                <ul>
+                                                    <li>call</li>
+                                                    <li>apply</li>
+                                                    <li>bind</li>
+                                                </ul>
+                                            </details>
+                                        </li>
+                                        <li>Function Borrowing</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>Strict Mode</li>
+                            <li>
+                                <details>
+                                    <summary>Asynchronous JavaScript</summary>
+                                    <ul>
+                                        <li>setTimeout</li>
+                                        <li>setInterval</li>
+                                        <li>Callbacks</li>
+                                        <li>Callback Hell</li>
+                                        <li>Promises</li>
+                                        <li>async / await</li>
+                                        <li>Event Loop</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>Classes</li>
+                            <li>Iterators and Generators</li>
+                            <li>
+                                <details>
+                                    <summary>Modules in JavaScript</summary>
+                                    <ul>
+                                        <li>CommonJS</li>
+                                        <li>ECMAScript Modules</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Memory Management</summary>
+                                    <ul>
+                                        <li>Memory Lifecycle</li>
+                                        <li>Garbage Collection</li>
+                                    </ul>
+                                </details>
+                            </li>
+                            <li>
+                                <details>
+                                    <summary>Using Chrome Dev Tools</summary>
+                                    <ul>
+                                        <li>Debugging Issues</li>
+                                        <li>Debugging Memory Leaks</li>
+                                        <li>Debugging Performance</li>
+                                    </ul>
+                                </details>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+                
+                <li>
+                    <details>
+                        <summary>For ecosystem and more, check other tracks involving JavaScript</summary>
+                        <ul>
+                            <li>Backend Roadmap</li>
+                            <li>Frontend Roadmap</li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
         </details>
-        
-        <details>
-            <summary>🌱 1. Basics & Fundamentals</summary>
-            <div class="details-content"><ul><li><strong>Syntax, Variables & Scope:</strong> <code>var</code>, <code>let</code>, <code>const</code>, Hoisting.</li><li><strong>Data Types:</strong> Primitives (String, Number, etc.) & Objects.</li><li><strong>Operators & Control Flow:</strong> Arithmetic, Logical, Conditionals, Loops.</li><li><strong>Functions:</strong> Declarations, Expressions, Arrow, IIFE, `this`.</li><li><strong>Data Structures:</strong> Objects, Arrays, `Map`, `Set`, `WeakMap`, `WeakSet`.</li></ul></div>
-        </details>
-
-        <details>
-            <summary>🌐 2. DOM & Web APIs</summary>
-            <div class="details-content"><ul><li><strong>DOM Manipulation:</strong> Selectors, Traversing, Events.</li><li><strong>Web Storage:</strong> <code>localStorage</code>, <code>sessionStorage</code>, `IndexedDB`.</li><li><strong>Advanced APIs:</strong> <code>Web Workers</code>, <code>Service Workers</code>, <code>WebSockets</code>, <code>Canvas</code>, `WebGL`, `Geolocation`.</li></ul></div>
-        </details>
-        
-        <details>
-            <summary>🚀 3. Asynchronous JavaScript</summary>
-            <div class="details-content"><ul><li><strong>Core Model:</strong> Event Loop, Callback Queue, Microtask Queue.</li><li><strong>Patterns:</strong> Callbacks, Promises (<code>.then</code>, <code>.all</code>), <code>async/await</code>.</li></ul></div>
-        </details>
-
-        <details>
-            <summary>🛠️ 4. Modern JS (ES6+)</summary>
-            <div class="details-content"><ul><li><strong>ES6 Essentials:</strong> Arrow Functions, Destructuring, Classes, Modules, Rest/Spread.</li><li><strong>ES2020 & Beyond:</strong> Optional Chaining (<code>?.</code>), Nullish Coalescing (<code>??</code>), Private Class Fields (<code>#</code>), `Promise.allSettled`.</li></ul></div>
-        </details>
-        
-        <details>
-            <summary>🧠 5. Advanced Concepts</summary>
-            <div class="details-content"><ul><li><strong>Core Mechanics:</strong> Prototype Chain, `this` (call, apply, bind), Closures, Garbage Collection.</li><li class="new-topic"><strong>Generators & Iterators:</strong> Creating custom iterable objects and handling data streams.</li></ul></div>
-        </details>
-
-        <details>
-            <summary>🏛️ 6. Architectures & Standards</summary>
-            <div class="details-content"><ul><li class="new-topic"><strong>Web Components:</strong> Shadow DOM, Custom Elements, HTML Templates.</li><li class="new-topic"><strong>Modern Patterns:</strong> Server Components, Micro-Frontends, Progressive Web Apps (PWA).</li><li class="new-topic"><strong>Accessibility (a11y):</strong> ARIA attributes, focus management, semantic HTML.</li><li class="new-topic"><strong>Internationalization (i18n):</strong> The <code>Intl</code> object for formatting numbers, dates, and strings.</li></ul></div>
-        </details>
-
-        <details>
-            <summary>🏗️ 7. Paradigms & Patterns</summary>
-            <div class="details-content"><ul><li><strong>Programming Paradigms:</strong> OOP, Functional Programming (Immutability, Pure Functions).</li><li><strong>Design Patterns:</strong> Module, Singleton, Observer, Factory, Proxy.</li></ul></div>
-        </details>
-
-        <details>
-            <summary>⚙️ 8. Ecosystem & Tooling</summary>
-            <div class="details-content"><ul><li><strong>TypeScript:</strong> Static typing for JavaScript.</li><li><strong>Runtimes:</strong> Browser (V8), Node.js, Deno, Bun.</li><li><strong>Tooling:</strong> npm/yarn (packages), Vite/Webpack (bundlers), ESLint/Prettier (code quality), Babel (transpiler).</li></ul></div>
-        </details>
-        
-        <details>
-            <summary>📚 9. Frameworks & Libraries</summary>
-            <div class="details-content"><ul><li><strong>Frontend:</strong> React, Vue, Angular, Svelte, Solid.js.</li><li><strong>Backend:</strong> Express, NestJS, Fastify.</li><li><strong>Testing:</strong> Jest, Vitest, Cypress, Playwright.</li><li><strong>Mobile & Desktop:</strong> React Native, Electron, Tauri.</li><li><strong>Static Site/Meta-frameworks:</strong> Next.js, Nuxt, Astro, SvelteKit.</li></ul></div>
-        </details>
-        
-        <details>
-            <summary>🛡️ 10. Performance & Security</summary>
-            <div class="details-content"><ul><li><strong>Performance:</strong> Debouncing, Throttling, Memoization, Code Splitting, Tree Shaking, Virtual DOM.</li><li><strong>Security:</strong> CORS, XSS, CSRF, Content Security Policy (CSP), JWT.</li></ul></div>
-        </details>
-
     </div>
-</div>
-
+    
+    <script>
+        // Optional: Add interactivity if needed (e.g., search), but kept simple for now
+    </script>
 </body>
 </html>
